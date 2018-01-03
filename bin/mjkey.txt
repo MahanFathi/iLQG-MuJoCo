@@ -1,0 +1,20 @@
+MuJoCo Pro Personal license activation key, number 42862, type 6.
+
+Issued to Mahan Fathi <fathi_mahan@mech.sharif.edu>.
+
+Expires December 5, 2018.
+
+This file activates MuJoCo Pro on a single computer with id:
+LINUX_891I1HF21NN_792N2007G8F22A0T32DS102098
+
+Do not modify this file. Its entire content, including the
+plain text section, is used by the activation manager.
+
+34025e87ebffe5233264dad24ff9cd92e07084232a57bb06eacf9f286a1b740b
+cc4a86d45f12d5b983064146c647fced616284ece8f91f55d3d6107d8d13221b
+a7866b6e21d76d5cccdfb0ae38f4aea7c6f4fad504860aa11279bf54bbffa11d
+29cbf73ae2d268b1f119cb6c87af4fa9668d258aa6c231581ad26e08d70d7cea
+1e0ac74b8f91ce0a2d4c9447415fcb60595d707a5e1040c4130abb49fc02a311
+ee4310ab728bf4cdd65bc22e8df34c15890bb8d5cb006fbb39cece6f1b19e08d
+2edad94f3076987e778c47a85004c170a0b65e2dc53bc79a8306d2263a43d1f4
+77c6aa3f122fd1cb6cae6fd44a52c886d7d54db41d6021566760db3d0b1b5c14
