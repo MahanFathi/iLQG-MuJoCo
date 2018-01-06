@@ -55,12 +55,9 @@ void ilqr::fwd_ctrl(bool init=false) {
     // calculate linear dynamics
 
     // copy data for now
-    mjData* d_cp = mj_copyData(nullptr, m, d);
+    mjData* d_cp = mj_copyData(nullptr, m, d); // TODO: I think redefining this on every fwd_ctrl() callback is going to consume some time. There should be a better way for implementing this.
 
-    if (!init) {
-        prev_cost = Cost.cost_to_go;
-        Cost.reset_cost();
-    }
+    Cost.reset_cost();
 
     for( int t = 0; t < T; t++ )
     {
@@ -111,7 +108,14 @@ void ilqr::fwd_ctrl(bool init=false) {
 
     if (init) {
         min_cost = Cost.cost_to_go;
+        prev_cost = Cost.cost_to_go;
         for( int t = 0; t < T; t++ ) {
+
+            for (int t = 0; t < T; t++) {
+                x[t] = X[t];
+                u[t] = U[t];
+            }
+            x[T] = X[T];
 
             mju_copy(d_cp->ctrl, X[t].data() + 2*nv, nu);
             mju_copy(d_cp->qpos, X[t].data(), nv);
@@ -125,23 +129,34 @@ void ilqr::fwd_ctrl(bool init=false) {
             get_derivs(deriv, m, d_cp);
             Fx[t].setZero();
             calc_F(Fx[t].data(), Fu[t].data(), deriv, m, d_cp);
-            Fx[t].block<2*DOFNUM, 2*DOFNUM>(0, 0) += stateMat_t::Identity();
+            Fx[t] += stateMat_t::Identity();
+            Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
         }
     }
     else if (decay_count == 0 || Cost.cost_to_go < prev_cost) {
         //  && decay_count < decay_limit
         // backup previous trajectory
-        for( int t = 0; t < T; t++ ){
-            x[t] = X[t];
-            u[t] = U[t];
+        prev_cost = Cost.cost_to_go;
+        if (prev_cost < min_cost) {
+            for (int t = 0; t < T; t++) {
+                x[t] = X[t];
+                u[t] = U[t];
+            }
+            x[T] = X[T];
         }
-        x[T] = X[T];
 //        printf("ran with alpha = %.3f\n", alpha);
         alpha *= decay;
         decay_count++;
         fwd_ctrl(false);
     }
+    else if (prev_cost > min_cost && iter >= min_iter) {
+        converged = true;
+        // re-init line-search params
+        decay_count = 0;
+        alpha = 1.0;
+    }
     else {
+        min_cost = prev_cost;
         // re-init line-search params
         decay_count = 0;
         alpha = 1.0;
@@ -164,8 +179,8 @@ void ilqr::fwd_ctrl(bool init=false) {
             get_derivs(deriv, m, d_cp);
             Fx[t].setZero();
             calc_F(Fx[t].data(), Fu[t].data(), deriv, m, d_cp);
-            Fx[t].block<2*DOFNUM, 2*DOFNUM>(0, 0) += stateMat_t::Identity();
-//            std::cout << "Fx["
+            Fx[t] += stateMat_t::Identity();
+            Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
         }
     }
 
@@ -192,32 +207,58 @@ void ilqr::bwd_lqr() {
         Qux = Fu[t].transpose() * Vxx * Fx[t];
 
         // K = -Quu^-1 Qux
-        K[t] = Quu.ldlt().solve(Qux) * (-1);
-        k[t] = Quu.ldlt().solve(Qu) * (-1);
+        K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
+        k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
 
+//        K[t] = Quu.ldlt().solve(Qux) * (-1);
+//        k[t] = Quu.ldlt().solve(Qu) * (-1);
+
+//        std::cout<< "\nQuu[" << t << "]: \n" << Quu << std::endl;
+//        std::cout<< "\nQux[" << t << "]: \n" << Qux << std::endl;
+//        std::cout<< "\nVxx[" << t << "]: \n" << Vxx << std::endl;
+//        std::cout<< "\nFx[" << t << "]: \n" << Fx[t] << std::endl;
+//        std::cout<< "\nFu[" << t << "]: \n" << Fu[t] << std::endl;
 //        std::cout<< "\nK[" << t << "]: \n" << K[t] << std::endl;
 //        std::cout<< "\nk[" << t << "]: \n" << k[t] << std::endl;
+//        std::cout<< "\nlx[" << t << "]: \n" << Cost.lx[t] << std::endl;
+//        std::cout<< "\nlu[" << t << "]: \n" << Cost.lu[t] << std::endl;
 
         // calc V and v
         Vxx = Qxx + K[t].transpose() * Quu * K[t] + K[t].transpose() * Qux + Qux.transpose() * K[t] + mu * stateMat_t::Identity();
-        Vx = Qx + K[t].transpose() * Quu * k[t] + K[t].transpose() * Qu + Qux.transpose() * k[t] + 2 * mu * stateVec_t::Ones();
+        Vx = Qx + K[t].transpose() * Quu * k[t] + K[t].transpose() * Qu + Qux.transpose() * k[t]; // + 2 * mu * stateVec_t::Ones();
 
     }
 
 }
+
 
 void ilqr::iterate() {
 
-    int iter = 0;
-    do{
-        bwd_lqr();
-        fwd_ctrl();
-        printf("\nCost at iter %d:\t%f\n", iter, Cost.cost_to_go);
-        iter++;
-    }
-    while( iter < maxiter );
+    bwd_lqr();
+    fwd_ctrl();
+    if (converged)
+        printf("\nConverged at iter %d.", iter);
+    else
+        printf("\nCost at iter %d:\t%f\n", iter, min_cost);
+    iter++;
+
 }
 
+
+void ilqr::manager() {
+
+    do{
+
+        iterate();
+
+    }
+    while(!converged);
+
+    converged = false;
+
+    // convergence occurs when next backward pass causes a higher cost
+
+}
 
 
 

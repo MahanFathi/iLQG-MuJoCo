@@ -1,0 +1,4 @@
+/opt/clion-2017.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug

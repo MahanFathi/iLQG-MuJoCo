@@ -9,22 +9,28 @@
 #include <Eigen/StdVector>
 #include "mjmodel.h"
 
-#define DOFNUM 2
-#define ACTNUM 1
+/* HOPPER */
+#define DOFNUM 6
+#define ACTNUM 3
+
+/* INVERTED PENDULUM */
+//#define DOFNUM 2
+//#define ACTNUM 1
 
 typedef Eigen::Matrix<mjtNum, 2*DOFNUM, 1> stateVec_t;
 typedef Eigen::Matrix<mjtNum, 2*DOFNUM, 2*DOFNUM, Eigen::RowMajor> stateMat_t;
-
-
-
 typedef Eigen::Matrix<mjtNum, ACTNUM, 1> actionVec_t;
+
+// can't define RowMajor row/column vectors in stupid eigen.
+#if ACTNUM == 1
 typedef Eigen::Matrix<mjtNum, ACTNUM, ACTNUM> actionMat_t;
-
-
 typedef Eigen::Matrix<mjtNum, ACTNUM, 2*DOFNUM> action_state_Mat_t;
 typedef Eigen::Matrix<mjtNum, 2*DOFNUM, ACTNUM> state_action_Mat_t;
-//typedef Eigen::Matrix<mjtNum, 2*DOFNUM, 2*DOFNUM+ACTNUM, Eigen::ColMajor> state_stateaction_Mat_t; // note that it's column major; for the sake of mujoco deriv code.
-
+#else
+typedef Eigen::Matrix<mjtNum, ACTNUM, ACTNUM, Eigen::RowMajor> actionMat_t;
+typedef Eigen::Matrix<mjtNum, ACTNUM, 2*DOFNUM, Eigen::RowMajor> action_state_Mat_t;
+typedef Eigen::Matrix<mjtNum, 2*DOFNUM, ACTNUM, Eigen::RowMajor> state_action_Mat_t;
+#endif
 
 typedef std::vector<stateVec_t, Eigen::aligned_allocator<stateVec_t>> stateThread; // Usage: X, lx
 typedef std::vector<actionVec_t, Eigen::aligned_allocator<actionVec_t>> actionThread; // Usage: U, k, lu

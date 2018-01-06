@@ -27,7 +27,26 @@ public:
     stateVec_t Vx;
 
     mjtNum cost_to_go;      // total accumulative cost
-    float k = 1;          // relative weight in cost
+
+
+    /*      ASSUMING THIS CASE TO BE THE HOPPER       */
+    #if ACTNUM == 1
+    #if DOFNUM == 2
+        float k = 1;          // relative weight in cost
+    #endif
+    #endif
+
+
+    /*      ASSUMING THIS CASE TO BE THE HOPPER       */
+    #if ACTNUM == 3
+    #if DOFNUM == 6
+        float k = 10;
+        // float stance_z = 1.25;
+        float torso = 0.4;
+        float thigh = 0.45;
+        float leg = 0.5;
+    #endif
+    #endif
 
 
     cost(const char *env, const mjModel* m, int T);

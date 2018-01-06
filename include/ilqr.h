@@ -30,7 +30,7 @@ public:
 
     // Improved line search vars
     mjtNum alpha{1.0};
-    mjtNum decay = 0.95;
+    mjtNum decay = 0.8;
     mjtNum min_cost;
     mjtNum prev_cost;
     int decay_count = 0;
@@ -66,6 +66,9 @@ public:
 
     mjtNum mu = 0.0;
 
+    int iter = 0;
+    int min_iter = 2;
+    bool converged = false;
 
     // constructor
     ilqr(mjModel *m, mjData *d,
@@ -82,8 +85,11 @@ public:
     // LQR backward pass
     void bwd_lqr();
 
-    // Manager
+    // One Iteration
     void iterate();
+
+    // Till Convergence
+    void manager();
 
 
 };

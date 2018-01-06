@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="ilgq"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ilgq">
+				<Option output="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/ilgq" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/./include"/>
+					<Add directory="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/./bin"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 ilgq"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ilgq/fast">
+				<Option output="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/ilgq" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/./include"/>
+					<Add directory="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/./bin"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 ilgq/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/anim.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/cost.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/glfw3.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/ilqr.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/lindy.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mjdata.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mjmodel.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mjrender.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mjvisualize.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mjxmacro.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/mujoco.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/types.h">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/main.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/anim.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/cost.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/cost_derivatives.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/ilqr.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/lindy.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/src/test.cpp">
+			<Option target="ilgq"/>
+		</Unit>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
