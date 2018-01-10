@@ -7,6 +7,7 @@
 #include <iostream>
 #include <lindy.h>
 #include "ilqr.h"
+#include <cmath>
 
 ilqr::ilqr(mjModel *m, mjData *d,
            mjtNum *deriv, int T,
@@ -14,6 +15,14 @@ ilqr::ilqr(mjModel *m, mjData *d,
         m(m), d(d), T(T), Cost(env, m, T),
         deriv(deriv), nv(m->nv), nu(m->nu)
 {
+
+    printf("nQ: %d\tnV: %d\tnbody: %d\n", m->nq, m->nv, m->nbody);
+
+    // initialize regularization parameters
+    mu = 0;
+    mu_min = 1e-6;
+    delta = 1.0;
+    delta_0 = 2.0;
 
     // initialize value functions, etc.
     X.resize(T+1);
@@ -37,7 +46,7 @@ ilqr::ilqr(mjModel *m, mjData *d,
 
 
     // proceed for a few steps
-    for( int i = 0; i < 80; i++ )
+    for( int i = 0; i < 500; i++ )
         mj_step(m, d);
 
 
@@ -85,6 +94,10 @@ void ilqr::fwd_ctrl(bool init=false) {
         Cost.add_cost(d_cp);
 
         // run with real dynamics
+//        for( int i = 0; i < 5; i++ ){
+//            mj_step1(m, d_cp);
+//            mj_step2(m, d_cp);
+//        }
         mj_step(m, d_cp);
 
 //        printf("State at time %d:\t\n", t);
@@ -105,17 +118,15 @@ void ilqr::fwd_ctrl(bool init=false) {
     mju_copy(X[T].data() + nv, d_cp->qvel, nv);
     mju_zero(d_cp->ctrl, nu); // assuming an identical final state cost
     Cost.add_cost(d_cp);
+    mj_deleteData(d_cp);
 
     if (init) {
         min_cost = Cost.cost_to_go;
         prev_cost = Cost.cost_to_go;
         for( int t = 0; t < T; t++ ) {
 
-            for (int t = 0; t < T; t++) {
-                x[t] = X[t];
-                u[t] = U[t];
-            }
-            x[T] = X[T];
+            x[t] = X[t];
+            u[t] = U[t];
 
             mju_copy(d_cp->ctrl, X[t].data() + 2*nv, nu);
             mju_copy(d_cp->qpos, X[t].data(), nv);
@@ -132,6 +143,7 @@ void ilqr::fwd_ctrl(bool init=false) {
             Fx[t] += stateMat_t::Identity();
             Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
         }
+        x[T] = X[T];
     }
     else if (decay_count == 0 || Cost.cost_to_go < prev_cost) {
         //  && decay_count < decay_limit
@@ -149,7 +161,7 @@ void ilqr::fwd_ctrl(bool init=false) {
         decay_count++;
         fwd_ctrl(false);
     }
-    else if (prev_cost > min_cost && iter >= min_iter) {
+    else if (prev_cost >= min_cost && iter >= min_iter) {
         converged = true;
         // re-init line-search params
         decay_count = 0;
@@ -197,25 +209,39 @@ void ilqr::bwd_lqr() {
     Vxx = Cost.get_lxx(X[T]);
     Vx = Cost.get_lx(X[T]);
 
+    bwd_flag = true; // true when bwd complete, false else
+
     for( int t = T-1; t >= 0; t-- ){
+
+        Quu = Cost.luu[t] + Fu[t].transpose() * Vxx * Fu[t]; // + mu * actionMat_t::Identity();
+
+        // check if Quu is positive (semi)definite
+        Eigen::LLT<actionMat_t> lltofQuu(Quu);
+        if (use_regularization)
+        if(lltofQuu.info() == Eigen::NumericalIssue) {
+//            printf("\niter: \t%d \ntime: \t%d\n mu: \t%f\n", iter, t, mu);
+            increase_mu();
+            bwd_flag = false;
+            break;
+        }
+
+        Qxx = Cost.lxx[t] + Fx[t].transpose() * Vxx * Fx[t];
+        Qux = Fu[t].transpose() * Vxx * Fx[t];
 
         Qx = Cost.lx[t] + Fx[t].transpose() * Vx;
         Qu = Cost.lu[t] + Fu[t].transpose() * Vx;
 
-        Qxx = Cost.lxx[t] + Fx[t].transpose() * Vxx * Fx[t];
-        Quu = Cost.luu[t] + Fu[t].transpose() * Vxx * Fu[t];
-        Qux = Fu[t].transpose() * Vxx * Fx[t];
-
         // K = -Quu^-1 Qux
-        K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
-        k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
-
-//        K[t] = Quu.ldlt().solve(Qux) * (-1);
-//        k[t] = Quu.ldlt().solve(Qu) * (-1);
+//        K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
+//        k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
+//
+        K[t] = Quu.llt().solve(Qux) * (-1);
+        k[t] = Quu.llt().solve(Qu) * (-1);
 
 //        std::cout<< "\nQuu[" << t << "]: \n" << Quu << std::endl;
+//        std::cout<< "\nQxx[" << t << "]: \n" << Qxx << std::endl;
 //        std::cout<< "\nQux[" << t << "]: \n" << Qux << std::endl;
-//        std::cout<< "\nVxx[" << t << "]: \n" << Vxx << std::endl;
+//        std::cout<< "\nVxx[" << t << "]: \n" << Vxx << std::endl;////
 //        std::cout<< "\nFx[" << t << "]: \n" << Fx[t] << std::endl;
 //        std::cout<< "\nFu[" << t << "]: \n" << Fu[t] << std::endl;
 //        std::cout<< "\nK[" << t << "]: \n" << K[t] << std::endl;
@@ -224,22 +250,50 @@ void ilqr::bwd_lqr() {
 //        std::cout<< "\nlu[" << t << "]: \n" << Cost.lu[t] << std::endl;
 
         // calc V and v
-        Vxx = Qxx + K[t].transpose() * Quu * K[t] + K[t].transpose() * Qux + Qux.transpose() * K[t] + mu * stateMat_t::Identity();
-        Vx = Qx + K[t].transpose() * Quu * k[t] + K[t].transpose() * Qu + Qux.transpose() * k[t]; // + 2 * mu * stateVec_t::Ones();
+        Vxx = Qxx + K[t].transpose() * Quu * K[t] + K[t].transpose() * Qux + Qux.transpose() * K[t] + mu * stateMat_t::Identity();;
+        Vx = Qx + K[t].transpose() * Quu * k[t] + K[t].transpose() * Qu + Qux.transpose() * k[t];
+        Vxx = 0.5 * (Vxx + Vxx.transpose());
 
     }
 
 }
 
 
+void ilqr::increase_mu() {
+
+    delta = fmax(delta_0, delta * delta_0);
+    mu = fmax(mu_min, mu * delta);
+
+}
+
+
+void ilqr::decrease_mu() {
+
+    delta = fmin(1 / delta_0, delta / delta_0);
+    if ( mu * delta > mu_min )
+        mu = mu * delta;
+    else
+        mu = 0.0;
+
+}
+
+
 void ilqr::iterate() {
 
-    bwd_lqr();
+    do {
+        bwd_lqr();
+    }
+    while(!bwd_flag);
+
+    decrease_mu();
+
     fwd_ctrl();
+
     if (converged)
         printf("\nConverged at iter %d.", iter);
     else
         printf("\nCost at iter %d:\t%f\n", iter, min_cost);
+
     iter++;
 
 }

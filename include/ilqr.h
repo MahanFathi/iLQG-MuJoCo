@@ -64,7 +64,13 @@ public:
     stateVec_t del_x;
     actionVec_t del_u;
 
-    mjtNum mu = 0.0;
+    mjtNum mu;
+    mjtNum mu_min;
+    mjtNum delta;
+    mjtNum delta_0;
+
+    bool bwd_flag;
+    bool use_regularization = true;
 
     int iter = 0;
     int min_iter = 2;
@@ -84,6 +90,10 @@ public:
 
     // LQR backward pass
     void bwd_lqr();
+
+    // Regularization
+    void increase_mu();
+    void decrease_mu();
 
     // One Iteration
     void iterate();
