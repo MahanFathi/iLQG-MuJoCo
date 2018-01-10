@@ -88,6 +88,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/config_inv_pen.h">
+			<Option target="ilgq"/>
+		</Unit>
 		<Unit filename="/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/include/anim.h">
 			<Option target="ilgq"/>
 		</Unit>

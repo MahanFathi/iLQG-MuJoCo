@@ -2,6 +2,7 @@
 #include "mujoco.h"
 #include <iostream>
 #include <types.h>
+#include <cost.h>
 
 
 
@@ -27,7 +28,7 @@ double eps = 1e-6;          // finite-difference epsilon
 
 
 // worker function for parallel finite-difference computation of derivatives
-void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, int id)
+void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, int id, cost* Cost, int t)
 {
     int nv = m->nv;
 
@@ -64,6 +65,8 @@ void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, in
     // save output for center point and warmstart (needed in forward only)
     mju_copy(center, acc, nv);
     mju_copy(warmstart, d->qacc_warmstart, nv);
+    extraVec_t center_extra = Cost->get_extra(d);
+    extraVec_t prtrbd_extra;
 
     // select target vector and original vector for force or acceleration derivative
     mjtNum* target = d->qfrc_applied;
@@ -92,6 +95,11 @@ void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, in
     {
         // perturb velocity
         d->qvel[i] += eps;
+
+        // get perturbed extra
+        prtrbd_extra = Cost->get_extra(d);
+        for( int j=0; j < Cost->extra_dim; j++ )
+            Cost->extra_deriv(j, i+nv) = (prtrbd_extra(j,0)-center_extra(j,0))/eps;
 
         // evaluate dynamics, with center warmstart
             mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -134,6 +142,12 @@ void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, in
         else
             d->qpos[m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]] += eps;
 
+        // get perturbed extra TODO: Not sure if works for quaternions
+        prtrbd_extra = Cost->get_extra(d);
+        for( int j=0; j < Cost->extra_dim; j++ )
+            Cost->extra_deriv(j, m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]) =
+                    (prtrbd_extra(j,0)-center_extra(j,0))/eps;
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_NONE, 1);
@@ -150,7 +164,7 @@ void _worker(mjtNum* deriv, const mjModel* m, const mjData* dmain, mjData* d, in
 }
 
 
-void get_derivs(mjtNum* deriv, mjModel* m, const mjData* dmain)
+void get_derivs(mjtNum* deriv, mjModel* m, const mjData* dmain, cost* Cost, int t)
 {
     // default nthread = number of logical cores (usually optimal)
     nthread = omp_get_num_procs();
@@ -175,7 +189,7 @@ void get_derivs(mjtNum* deriv, mjModel* m, const mjData* dmain)
     // run worker threads in parallel if OpenMP is enabled
     #pragma omp parallel for schedule(static)
     for( int n=0; n<nthread; n++ )
-        _worker(deriv, m, dmain, d[n], n);
+        _worker(deriv, m, dmain, d[n], n, Cost, t);
 
     // set solver options for main simulation
     m->opt.iterations = save_iterations;
@@ -189,7 +203,9 @@ void get_derivs(mjtNum* deriv, mjModel* m, const mjData* dmain)
 
 
 
-void calc_F(mjtNum* Fxdata, mjtNum* Fudata, mjtNum* deriv, mjModel* m, mjData* dmain){
+void calc_derivatives(mjtNum* Fxdata, mjtNum* Fudata, mjtNum* deriv, mjModel* m, mjData* dmain, cost* Cost, int t){
+
+    get_derivs(deriv, m, dmain, Cost, t);
 
     mju_scl(deriv, deriv, m->opt.timestep, 3*m->nv*m->nv);
 

@@ -28,6 +28,9 @@ public:
 
     mjtNum cost_to_go;      // total accumulative cost
 
+    int extra_dim = EXTRAV;
+    extra_state_Mat_t extra_deriv;
+
 
     /*      ASSUMING THIS CASE TO BE THE HOPPER       */
     #if ACTNUM == 1
@@ -60,6 +63,21 @@ public:
     stateVec_t get_lx(stateVec_t x);
 
     stateMat_t get_lxx(stateVec_t x);
+
+    mjtNum get_cost(const mjData *d);
+
+    void get_derivatives(const mjData *d, int t);
+
+    extraVec_t get_extra(const mjData *d);
+
+    #if ACTNUM == 3 && DOFNUM == 6
+
+    Eigen::Matrix<mjtNum, 3, 1> get_body_coor(const mjData* d, int body_id);
+    Eigen::Matrix<mjtNum, 3, 1> get_com(const mjData* d);
+
+    #endif
+
+
 };
 
 

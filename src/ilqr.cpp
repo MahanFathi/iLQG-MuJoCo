@@ -46,7 +46,7 @@ ilqr::ilqr(mjModel *m, mjData *d,
 
 
     // proceed for a few steps
-    for( int i = 0; i < 500; i++ )
+    for( int i = 0; i < 800; i++ )
         mj_step(m, d);
 
 
@@ -118,7 +118,6 @@ void ilqr::fwd_ctrl(bool init=false) {
     mju_copy(X[T].data() + nv, d_cp->qvel, nv);
     mju_zero(d_cp->ctrl, nu); // assuming an identical final state cost
     Cost.add_cost(d_cp);
-    mj_deleteData(d_cp);
 
     if (init) {
         min_cost = Cost.cost_to_go;
@@ -132,16 +131,14 @@ void ilqr::fwd_ctrl(bool init=false) {
             mju_copy(d_cp->qpos, X[t].data(), nv);
             mju_copy(d_cp->qvel, X[t].data() + nv, nv);
 
-            // get cost matrices
-            Cost.calc_costmats(d_cp, t);
             Cost.add_cost(d_cp);
 
             // get linear dynamics TODO: probably not the fastest parallelization
-            get_derivs(deriv, m, d_cp);
             Fx[t].setZero();
-            calc_F(Fx[t].data(), Fu[t].data(), deriv, m, d_cp);
+            calc_derivatives(Fx[t].data(), Fu[t].data(), deriv, m, d_cp, &Cost, t);
             Fx[t] += stateMat_t::Identity();
             Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
+            Cost.get_derivatives(d_cp, t);
         }
         x[T] = X[T];
     }
@@ -184,17 +181,16 @@ void ilqr::fwd_ctrl(bool init=false) {
             mju_copy(d_cp->qpos, X[t].data(), nv);
             mju_copy(d_cp->qvel, X[t].data() + nv, nv);
 
-            // get cost matrices
-            Cost.calc_costmats(d_cp, t);
-
             // get linear dynamics TODO: probably not the fastest parallelization
-            get_derivs(deriv, m, d_cp);
             Fx[t].setZero();
-            calc_F(Fx[t].data(), Fu[t].data(), deriv, m, d_cp);
+            calc_derivatives(Fx[t].data(), Fu[t].data(), deriv, m, d_cp, &Cost, t);
             Fx[t] += stateMat_t::Identity();
             Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
+            Cost.get_derivatives(d_cp, t);
         }
     }
+
+    mj_deleteData(d_cp);
 
 }
 

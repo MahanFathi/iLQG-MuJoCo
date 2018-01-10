@@ -9,17 +9,21 @@
 #include <Eigen/StdVector>
 #include "mjmodel.h"
 
-/* HOPPER */
+///* HOPPER */
 #define DOFNUM 6
 #define ACTNUM 3
+#define EXTRAV 2
 
-/* INVERTED PENDULUM */
+///* INVERTED PENDULUM */
 //#define DOFNUM 2
 //#define ACTNUM 1
+//#define EXTRAV 2
 
 typedef Eigen::Matrix<mjtNum, 2*DOFNUM, 1> stateVec_t;
 typedef Eigen::Matrix<mjtNum, 2*DOFNUM, 2*DOFNUM, Eigen::RowMajor> stateMat_t;
 typedef Eigen::Matrix<mjtNum, ACTNUM, 1> actionVec_t;
+typedef Eigen::Matrix<mjtNum, EXTRAV, 1> extraVec_t;
+typedef Eigen::Matrix<mjtNum, EXTRAV, 2*DOFNUM, Eigen::RowMajor> extra_state_Mat_t;
 
 // can't define RowMajor row/column vectors in stupid eigen.
 #if ACTNUM == 1

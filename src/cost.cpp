@@ -12,9 +12,9 @@ cost::cost(const char *env, const mjModel* m, int T): m(m), T(T)
 {
     cost_to_go = 0.0;
 
-    lx.resize(T);
+    lx.resize(T+1);
     lu.resize(T);
-    lxx.resize(T);
+    lxx.resize(T+1);
     luu.resize(T);
 
     Vx.setZero();
@@ -26,6 +26,8 @@ cost::cost(const char *env, const mjModel* m, int T): m(m), T(T)
         lxx[t].setZero();
         luu[t].setZero();
     }
+    lx[T].setZero();
+    lxx[T].setZero();
 
 //    // set cost matrices to zero at first
 //    for( int t = 0; t < T; t++ ){
@@ -46,8 +48,7 @@ void cost::reset_cost() {
 /* ASSUMING THIS CASE TO BE THE INVERTED PENDULUM */
 /*################################################*/
 
-#if ACTNUM == 1
-#if DOFNUM == 2
+#if ACTNUM == 1 && DOFNUM == 2
 
 void cost::calc_costmats(const mjData *d, int t)
 {
@@ -66,10 +67,7 @@ void cost::calc_costmats(const mjData *d, int t)
 
 void cost::add_cost(const mjData *d) {
 
-    cost_to_go +=
-            k * (d->qpos[1]) * (d->qpos[1]) +
-            k * (d->qvel[1]) * (d->qvel[1]) +
-            (d->ctrl[0]) * (d->ctrl[0]);
+    cost_to_go += get_cost(d);
 
 //    printf("\nCOST: \t%f",cost_to_go);
 
@@ -91,7 +89,40 @@ stateMat_t cost::get_lxx(stateVec_t x){
 
 }
 
-#endif
+mjtNum cost::get_cost(const mjData* d) {
+
+    mjtNum instant_cost =
+            k * (d->qpos[1]) * (d->qpos[1]) +
+            k * (d->qvel[1]) * (d->qvel[1]) +
+            (d->ctrl[0]) * (d->ctrl[0]);
+
+    return instant_cost;
+
+}
+
+extraVec_t cost::get_extra(const mjData* d) {
+
+    extraVec_t extra = extraVec_t::Zero();
+    extra(0, 0) = d->qpos[1];
+    extra(1, 0) = d->qvel[1];
+
+    return extra;
+
+}
+
+void cost::get_derivatives(const mjData* d, int t) {
+
+    // extra_deriv must be calculated before
+
+    lx[t] = 2.0 * k * d->qpos[1] * extra_deriv.row(0).transpose();
+    lx[t] += 2.0 * k * d->qvel[1] * extra_deriv.row(1).transpose();
+    lxx[t] = 2.0 * k * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lxx[t] += 2.0 * k * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lu[t](0,0) = 2 * d->ctrl[0];
+    luu[t](0,0) = 2;
+
+}
+
 #endif
 
 
@@ -102,79 +133,9 @@ stateMat_t cost::get_lxx(stateVec_t x){
 #if ACTNUM == 3
 #if DOFNUM == 6
 
-void cost::calc_costmats(const mjData *d, int t)
-{
-
-    // GRAD
-
-    lx[t](3,0) = (k*(torso*cos(d->qpos[3]) + 2*thigh*cos(d->qpos[3] - d->qpos[4]) -
-                    2*leg*cos(d->qpos[3] - d->qpos[4] + d->qpos[4]))*(torso*sin(d->qpos[3]) +
-                                                                      2*thigh*sin(d->qpos[3] - d->qpos[4]) - 2*leg*sin(d->qpos[3] - d->qpos[4] + d->qpos[4])))/2;
-
-    lx[t](4,0) = k*(thigh*cos(d->qpos[3] - d->qpos[4]) - leg*cos(d->qpos[3] - d->qpos[4] + d->qpos[4]))*
-                (-(torso*sin(d->qpos[3])) - 2*thigh*sin(d->qpos[3] - d->qpos[4]) + 2*leg*sin(d->qpos[3] - d->qpos[4] + d->qpos[4]));
-
-    lx[t](5,0) = k*leg*cos(d->qpos[3] - d->qpos[4] + d->qpos[4])*(-(torso*sin(d->qpos[3])) - 2*thigh*sin(d->qpos[3] - d->qpos[4]) +
-                                                                 2*leg*sin(d->qpos[3] - d->qpos[4] + d->qpos[4]));
-
-    lu[t](0,0) = 2 * d->ctrl[0];
-    lu[t](1,0) = 2 * d->ctrl[1];
-    lu[t](2,0) = 2 * d->ctrl[2];
-
-
-    // HESS
-
-    lxx[t](3,3) = (k*(pow(torso,2)*cos(2*d->qpos[3]) +
-                    4*(pow(thigh,2)*cos(2*(d->qpos[3] - d->qpos[4])) +
-                       thigh*torso*cos(2*d->qpos[3] - d->qpos[4]) -
-                       2*leg*thigh*cos(2*d->qpos[3] - 2*d->qpos[4] + d->qpos[5]) +
-                       pow(leg,2)*cos(2*(d->qpos[3] - d->qpos[4] + d->qpos[5])) -
-                       leg*torso*cos(2*d->qpos[3] - d->qpos[4] + d->qpos[5]))))/2.;
-
-    lxx[t](3,4) = -(k*(2*pow(thigh,2)*cos(2*(d->qpos[3] - d->qpos[4])) +
-                     thigh*torso*cos(2*d->qpos[3] - d->qpos[4]) +
-                     leg*(-4*thigh*cos(2*d->qpos[3] - 2*d->qpos[4] + d->qpos[5]) +
-                          2*leg*cos(2*(d->qpos[3] - d->qpos[4] + d->qpos[5])) -
-                          torso*cos(2*d->qpos[3] - d->qpos[4] + d->qpos[5]))));
-
-    lxx[t](4,3) = lxx[t](3,4);
-
-    lxx[t](3,5) = k*leg*(-2*thigh*cos(2*d->qpos[3] - 2*d->qpos[4] + d->qpos[5]) +
-                       2*leg*cos(2*(d->qpos[3] - d->qpos[4] + d->qpos[5])) -
-                       torso*cos(2*d->qpos[3] - d->qpos[4] + d->qpos[5]));
-
-    lxx[t](5,3) = lxx[t](3,5);
-
-    lxx[t](4,4) = -(k*leg*(-2*thigh*cos(2*d->qpos[3] - 2*d->qpos[4] + d->qpos[5]) +
-                         2*leg*cos(2*(d->qpos[3] - d->qpos[4] + d->qpos[5])) +
-                         torso*sin(d->qpos[3])*sin(d->qpos[3] - d->qpos[4] + d->qpos[5])));
-
-    lxx[t](4,5) = 2*k*(pow(thigh*cos(d->qpos[3] - d->qpos[4]) - leg*cos(d->qpos[3] - d->qpos[4] + d->qpos[5]),2) +
-                     (thigh*sin(d->qpos[3] - d->qpos[4]) - leg*sin(d->qpos[3] - d->qpos[4] + d->qpos[5]))*
-                     (-(torso*sin(d->qpos[3]))/2. - thigh*sin(d->qpos[3] - d->qpos[4]) +
-                      leg*sin(d->qpos[3] - d->qpos[4] + d->qpos[5])));
-
-    lxx[t](5,4) = lxx[t](4,5);
-
-    lxx[t](5,5) = k*leg*(2*leg*cos(2*(d->qpos[3] - d->qpos[4] + d->qpos[5])) +
-                       (torso*sin(d->qpos[3]) + 2*thigh*sin(d->qpos[3] - d->qpos[4])) *
-                       sin(d->qpos[3] - d->qpos[4] + d->qpos[5]));
-
-    luu[t](0,0) = 2;
-    luu[t](1,1) = 2;
-    luu[t](2,2) = 2;
-
-}
-
-
 void cost::add_cost(const mjData *d) {
 
-    cost_to_go += k * pow(( -torso/2.0 * sin(d->qpos[3]) +
-                        thigh * sin(d->qpos[4] - d->qpos[3]) +
-                        leg * sin(d->qpos[5] - d->qpos[4] - d->qpos[3])),2) +
-                  (d->ctrl[0]) * (d->ctrl[0]) +
-                  (d->ctrl[1]) * (d->ctrl[1]) +
-                  (d->ctrl[2]) * (d->ctrl[2]);
+    cost_to_go += get_cost(d);
 
 }
 
@@ -241,6 +202,75 @@ stateMat_t cost::get_lxx(stateVec_t x){
     return Vxx;
 
 }
+
+Eigen::Matrix<mjtNum, 3, 1> cost::get_com(const mjData* d) {
+
+    Eigen::Matrix<mjtNum, 3, 1> com = Eigen::Matrix<mjtNum, 3, 1>::Zero();
+    mjtNum TotalMass = 0;
+    for (int i = 1; i < m->nbody; i++)
+    {
+        TotalMass += m->body_mass[i];
+        mju_addToScl3(com.data(), d->xipos+i*3, m->body_mass[i]);
+    }
+    com /= TotalMass;
+    return com;
+
+}
+
+Eigen::Matrix<mjtNum, 3, 1> cost::get_body_coor(const mjData* d, int body_id) {
+
+    Eigen::Matrix<mjtNum, 3, 1> body_coor;
+    mju_copy3(body_coor.data(), d->xipos+body_id*3);
+    return body_coor;
+
+}
+
+extraVec_t cost::get_extra(const mjData *d) {
+
+    extraVec_t extra = extraVec_t::Zero();
+    Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
+    Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
+    // Eigen::Matrix<mjtNum, 3, 1> torso = get_body_coor(d, 1); // id 1 corresponds to torso
+    extra(0,0) = com(0, 0) - foot(0,0); // x offset
+    extra(1,0) = com(2, 0) - foot(2,0); // z stance
+
+}
+
+mjtNum cost::get_cost(const mjData *d) {
+
+    mjtNum instant_cost;
+    Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
+    Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
+    instant_cost = k * pow(com(0,0) - foot(0,0), 2.0) +
+                   k * pow(0.8 - (com(2,0) - foot(2,0)), 2.0) +
+                   pow(d->ctrl[0], 2.0) +
+                   pow(d->ctrl[1], 2.0) +
+                   pow(d->ctrl[2], 2.0);
+    return instant_cost;
+
+}
+
+void cost::get_derivatives(const mjData *d, int t) {
+
+    // extra_deriv must be calculated before
+
+    extraVec_t extra = get_extra(d);
+
+    lx[t] = 2.0 * k * extra(0,0) * extra_deriv.row(0).transpose();
+    lx[t] += 2.0 * k * (extra(1,0) - 0.8) * extra_deriv.row(1).transpose();
+    lxx[t] = 2.0 * k * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lxx[t] += 2.0 * k * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lu[t](0,0) = 2 * d->ctrl[0];
+    lu[t](1,0) = 2 * d->ctrl[1];
+    lu[t](2,0) = 2 * d->ctrl[2];
+    luu[t](0,0) = 2;
+    luu[t](1,1) = 2;
+    luu[t](2,2) = 2;
+
+}
+
+
+
 
 #endif
 #endif

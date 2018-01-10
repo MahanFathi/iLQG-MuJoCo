@@ -25,4 +25,4 @@ add_executable(ilgq ./main.cpp
                     ./include/mjrender.h
                     ./include/mjvisualize.h
                     ./include/mjxmacro.h
-                    ./include/glfw3.h src/lindy.cpp include/lindy.h src/ilqr.cpp include/ilqr.h src/cost.cpp include/cost.h src/cost_derivatives.cpp src/anim.cpp include/anim.h include/types.h)
+                    ./include/glfw3.h src/lindy.cpp include/lindy.h src/ilqr.cpp include/ilqr.h src/cost.cpp include/cost.h src/cost_derivatives.cpp src/anim.cpp include/anim.h include/types.h config_inv_pen.h)

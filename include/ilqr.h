@@ -70,7 +70,7 @@ public:
     mjtNum delta_0;
 
     bool bwd_flag;
-    bool use_regularization = true;
+    bool use_regularization = false;
 
     int iter = 0;
     int min_iter = 2;
