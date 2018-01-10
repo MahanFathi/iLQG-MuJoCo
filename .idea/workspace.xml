@@ -13,12 +13,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ce5e4391-21b1-4012-80b2-7a1458332ea2" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/bin/MUJOCO_LOG.TXT" afterPath="$PROJECT_DIR$/bin/MUJOCO_LOG.TXT" />
-      <change beforePath="$PROJECT_DIR$/bin/main" afterPath="$PROJECT_DIR$/bin/main" />
-      <change beforePath="$PROJECT_DIR$/include/cost.h" afterPath="$PROJECT_DIR$/include/cost.h" />
-      <change beforePath="$PROJECT_DIR$/include/ilqr.h" afterPath="$PROJECT_DIR$/include/ilqr.h" />
-      <change beforePath="$PROJECT_DIR$/model/hopper.xml" afterPath="$PROJECT_DIR$/model/hopper.xml" />
-      <change beforePath="$PROJECT_DIR$/src/ilqr.cpp" afterPath="$PROJECT_DIR$/src/ilqr.cpp" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -65,7 +59,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ilqr.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ilqr.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/ilqr.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="139">
@@ -77,10 +71,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="cost.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="cost.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/cost.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="620">
+            <state relative-caret-position="-2915">
               <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
               <folding>
                 <element signature="e#40#58#0" expanded="true" />
@@ -93,7 +87,7 @@
       <file leaf-file-name="cost.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/cost.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="940">
+            <state relative-caret-position="879">
               <caret line="47" column="10" lean-forward="false" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
               <folding>
                 <element signature="e#81#99#0" expanded="true" />
@@ -260,12 +254,12 @@
       <workItem from="1515321844706" duration="12145000" />
       <workItem from="1515436505895" duration="472000" />
       <workItem from="1515495584836" duration="1456000" />
-      <workItem from="1515508017532" duration="5270000" />
+      <workItem from="1515508017532" duration="5721000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="55903000" />
+    <option name="totallyTimeSpent" value="56354000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1536" height="1059" extended-state="6" />
@@ -728,28 +722,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/cost.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="940">
-          <caret line="47" column="10" lean-forward="false" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
-          <folding>
-            <element signature="e#81#99#0" expanded="true" />
-            <marker date="1515332012137" expanded="true" signature="773:934" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cost.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-          <folding>
-            <element signature="e#40#58#0" expanded="true" />
-            <element signature="e#906#1667#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/model/inverted_double_pendulum.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-145">
@@ -774,6 +746,28 @@
           <caret line="75" column="20" lean-forward="false" selection-start-line="75" selection-start-column="20" selection-end-line="75" selection-end-column="20" />
           <folding>
             <element signature="e#81#98#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/cost.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="879">
+          <caret line="47" column="10" lean-forward="false" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
+          <folding>
+            <element signature="e#81#99#0" expanded="true" />
+            <marker date="1515332012137" expanded="true" signature="773:934" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cost.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2915">
+          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+          <folding>
+            <element signature="e#40#58#0" expanded="true" />
+            <element signature="e#906#1667#0" expanded="true" />
           </folding>
         </state>
       </provider>
