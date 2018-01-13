@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
     mjData* dc = mj_makeData(m);
 
 
-    int T = 50; // lqr optimization horizon
+    int T = 100; // lqr optimization horizon
     mjtNum* deriv = (mjtNum*) mju_malloc(3*sizeof(mjtNum)*nv*nv);
 
 
@@ -170,9 +170,9 @@ int main(int argc, char** argv) {
             mjtNum simstart = d->time;
 
 
-            while( d->time - simstart < 1.0/60.0 && t < T){
+            while( d->time - simstart < 1.0/200.0 && t < T){ // I've messed with the timing
                 if ( t < T ){
-                    mju_copy(d->ctrl, ILQR.U[t].data(), nu);
+                    mju_copy(d->ctrl, ILQR.u[t].data(), nu);
 //                    d->ctrl[0] = 0.5;
                     t++;
                     mj_step(m, d);

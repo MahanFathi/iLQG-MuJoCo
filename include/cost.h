@@ -43,7 +43,7 @@ public:
     /*      ASSUMING THIS CASE TO BE THE HOPPER       */
     #if ACTNUM == 3
     #if DOFNUM == 6
-        float k = 1;
+        float k = 10;
         // float stance_z = 1.25;
         float torso = 0.4;
         float thigh = 0.45;

@@ -24,17 +24,19 @@ public:
     actionThread U;
     stateThread x;
     actionThread u;
+    stateThread X_MinCost;
+    actionThread U_MinCost;
 
     // Cost Class is included here
     cost Cost;
 
     // Improved line search vars
     mjtNum alpha{1.0};
-    mjtNum decay = 0.8;
+    mjtNum decay = 0.9;
     mjtNum min_cost;
     mjtNum prev_cost;
     int decay_count = 0;
-    int decay_limit = 3;
+    int decay_limit = 10;
 
     int maxiter = 1;
 
@@ -57,6 +59,7 @@ public:
     state_action_MatThread Fu;
 
     int T; // optimization horizon
+    int step_ratio = 1; // >= 1
     int nv;
     int nu;
 
@@ -73,8 +76,11 @@ public:
     bool use_regularization = false;
 
     int iter = 0;
-    int min_iter = 2;
-    bool converged = false;
+    int min_iter = 10;
+    bool done = false;
+
+    mjtNum torque_lower_bound = -1;
+    mjtNum torque_upper_bound = +1;
 
     // constructor
     ilqr(mjModel *m, mjData *d,
@@ -102,6 +108,7 @@ public:
     void manager();
 
 
+    void big_step(mjData *d);
 };
 
 
