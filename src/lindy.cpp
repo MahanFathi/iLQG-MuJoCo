@@ -207,7 +207,7 @@ void calc_derivatives(mjtNum* Fxdata, mjtNum* Fudata, mjtNum* deriv, mjModel* m,
 
     get_derivs(deriv, m, dmain, Cost, t);
 
-    mju_scl(deriv, deriv, 1*m->opt.timestep, 3*m->nv*m->nv);
+//    mju_scl(deriv, deriv, 5*m->opt.timestep, 3*m->nv*m->nv);
 
     mjtNum dqpqv[2*m->nv*m->nv];
     mju_copy(dqpqv, deriv, 2*m->nv*m->nv);

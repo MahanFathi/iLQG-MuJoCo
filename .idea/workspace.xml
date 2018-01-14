@@ -18,6 +18,8 @@
       <change beforePath="$PROJECT_DIR$/include/cost.h" afterPath="$PROJECT_DIR$/include/cost.h" />
       <change beforePath="$PROJECT_DIR$/include/ilqr.h" afterPath="$PROJECT_DIR$/include/ilqr.h" />
       <change beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
+      <change beforePath="$PROJECT_DIR$/model/hopper.xml" afterPath="$PROJECT_DIR$/model/hopper.xml" />
+      <change beforePath="$PROJECT_DIR$/src/cost.cpp" afterPath="$PROJECT_DIR$/src/cost.cpp" />
       <change beforePath="$PROJECT_DIR$/src/ilqr.cpp" afterPath="$PROJECT_DIR$/src/ilqr.cpp" />
       <change beforePath="$PROJECT_DIR$/src/lindy.cpp" afterPath="$PROJECT_DIR$/src/lindy.cpp" />
     </list>
@@ -35,8 +37,18 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="700">
-              <caret line="124" column="13" lean-forward="false" selection-start-line="124" selection-start-column="13" selection-end-line="124" selection-end-column="13" />
+            <state relative-caret-position="100">
+              <caret line="127" column="25" lean-forward="false" selection-start-line="127" selection-start-column="25" selection-end-line="127" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="hopper.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/model/hopper.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="140">
+              <caret line="7" column="42" lean-forward="false" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -45,8 +57,8 @@
       <file leaf-file-name="ilqr.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ilqr.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4217">
-              <caret line="243" column="26" lean-forward="true" selection-start-line="243" selection-start-column="26" selection-end-line="243" selection-end-column="26" />
+            <state relative-caret-position="500">
+              <caret line="25" column="17" lean-forward="false" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
               <folding>
                 <element signature="e#40#57#0" expanded="true" />
               </folding>
@@ -57,8 +69,8 @@
       <file leaf-file-name="ilqr.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/ilqr.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1220">
-              <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+            <state relative-caret-position="140">
+              <caret line="73" column="25" lean-forward="false" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
               <folding>
                 <element signature="e#81#98#0" expanded="true" />
               </folding>
@@ -69,11 +81,11 @@
       <file leaf-file-name="cost.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cost.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="611">
-              <caret line="268" column="0" lean-forward="false" selection-start-line="268" selection-start-column="0" selection-end-line="268" selection-end-column="0" />
+            <state relative-caret-position="200">
+              <caret line="244" column="33" lean-forward="false" selection-start-line="244" selection-start-column="33" selection-end-line="244" selection-end-column="33" />
               <folding>
                 <element signature="e#969#2677#0" expanded="true" />
-                <marker date="1515692121198" expanded="true" signature="968:2677" ph="..." />
+                <marker date="1515861608692" expanded="true" signature="968:2677" ph="..." />
               </folding>
             </state>
           </provider>
@@ -82,8 +94,8 @@
       <file leaf-file-name="cost.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/cost.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="45" column="20" lean-forward="false" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
+            <state relative-caret-position="-49">
+              <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
               <folding>
                 <element signature="e#659#742#0" expanded="true" />
               </folding>
@@ -94,8 +106,8 @@
       <file leaf-file-name="lindy.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lindy.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="491">
-              <caret line="209" column="26" lean-forward="false" selection-start-line="209" selection-start-column="26" selection-end-line="209" selection-end-column="27" />
+            <state relative-caret-position="511">
+              <caret line="210" column="0" lean-forward="true" selection-start-line="210" selection-start-column="0" selection-end-line="210" selection-end-column="0" />
               <folding>
                 <element signature="e#1#20#0" expanded="true" />
               </folding>
@@ -151,10 +163,18 @@
       <find>converged</find>
       <find>ste</find>
       <find>rat</find>
+      <find>0.8</find>
+      <find>0.55</find>
+      <find>mu</find>
+      <find>true</find>
+      <find>false</find>
+      <find>ratio</find>
+      <find>calc</find>
     </findStrings>
     <replaceStrings>
       <replace />
       <replace>done</replace>
+      <replace>0.8</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -163,18 +183,18 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/model/hopper.xml" />
         <option value="$PROJECT_DIR$/config_inv_pen.h" />
         <option value="$PROJECT_DIR$/main_inv_pen.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/include/lindy.h" />
         <option value="$PROJECT_DIR$/include/types.h" />
-        <option value="$PROJECT_DIR$/include/cost.h" />
         <option value="$PROJECT_DIR$/src/cost.cpp" />
+        <option value="$PROJECT_DIR$/include/cost.h" />
+        <option value="$PROJECT_DIR$/model/hopper.xml" />
         <option value="$PROJECT_DIR$/src/lindy.cpp" />
-        <option value="$PROJECT_DIR$/src/ilqr.cpp" />
-        <option value="$PROJECT_DIR$/include/ilqr.h" />
         <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/include/ilqr.h" />
+        <option value="$PROJECT_DIR$/src/ilqr.cpp" />
       </list>
     </option>
   </component>
@@ -188,6 +208,28 @@
     <option name="y" value="805" />
     <option name="width" value="1344" />
     <option name="height" value="254" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>C/C++</id>
+          </State>
+          <State>
+            <id>GeneralC/C++</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>ClangTidyInspection</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -215,6 +257,11 @@
               <item name="ilgq" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
               <item name="iLQG-MuJoCo" type="462c0819:PsiDirectoryNode" />
               <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ilgq" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="iLQG-MuJoCo" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ilgq" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
@@ -273,12 +320,12 @@
       <workItem from="1515321844706" duration="12145000" />
       <workItem from="1515436505895" duration="472000" />
       <workItem from="1515495584836" duration="1456000" />
-      <workItem from="1515508017532" duration="54119000" />
+      <workItem from="1515508017532" duration="76386000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="104752000" />
+    <option name="totallyTimeSpent" value="127019000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="14" y="14" width="1515" height="1031" extended-state="6" />
@@ -655,14 +702,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/hopper.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="35">
-          <caret line="7" column="58" lean-forward="false" selection-start-line="7" selection-start-column="58" selection-end-line="7" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/cost_inv_pen.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
@@ -734,26 +773,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/lindy.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="491">
-          <caret line="209" column="26" lean-forward="false" selection-start-line="209" selection-start-column="26" selection-end-line="209" selection-end-column="27" />
+        <state relative-caret-position="511">
+          <caret line="210" column="0" lean-forward="true" selection-start-line="210" selection-start-column="0" selection-end-line="210" selection-end-column="0" />
           <folding>
             <element signature="e#1#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="700">
-          <caret line="124" column="13" lean-forward="false" selection-start-line="124" selection-start-column="13" selection-end-line="124" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/cost.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="45" column="20" lean-forward="false" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
+        <state relative-caret-position="-49">
+          <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
           <folding>
             <element signature="e#659#742#0" expanded="true" />
           </folding>
@@ -762,19 +793,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cost.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="611">
-          <caret line="268" column="0" lean-forward="false" selection-start-line="268" selection-start-column="0" selection-end-line="268" selection-end-column="0" />
+        <state relative-caret-position="200">
+          <caret line="244" column="33" lean-forward="false" selection-start-line="244" selection-start-column="33" selection-end-line="244" selection-end-column="33" />
           <folding>
             <element signature="e#969#2677#0" expanded="true" />
-            <marker date="1515692121198" expanded="true" signature="968:2677" ph="..." />
+            <marker date="1515861608692" expanded="true" signature="968:2677" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="127" column="25" lean-forward="false" selection-start-line="127" selection-start-column="25" selection-end-line="127" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/hopper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="7" column="42" lean-forward="false" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/ilqr.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1220">
-          <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+        <state relative-caret-position="140">
+          <caret line="73" column="25" lean-forward="false" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
           <folding>
             <element signature="e#81#98#0" expanded="true" />
           </folding>
@@ -783,8 +830,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ilqr.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4217">
-          <caret line="243" column="26" lean-forward="true" selection-start-line="243" selection-start-column="26" selection-end-line="243" selection-end-column="26" />
+        <state relative-caret-position="500">
+          <caret line="25" column="17" lean-forward="false" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
           <folding>
             <element signature="e#40#57#0" expanded="true" />
           </folding>

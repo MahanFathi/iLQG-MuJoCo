@@ -59,7 +59,7 @@ public:
     state_action_MatThread Fu;
 
     int T; // optimization horizon
-    int step_ratio = 1; // >= 1
+    int step_ratio = 5; // >= 1
     int nv;
     int nu;
 
@@ -71,12 +71,13 @@ public:
     mjtNum mu_min;
     mjtNum delta;
     mjtNum delta_0;
+    mjtNum max_mu = 1e12;
 
     bool bwd_flag;
     bool use_regularization = false;
 
     int iter = 0;
-    int min_iter = 10;
+    int min_iter = 50;
     bool done = false;
 
     mjtNum torque_lower_bound = -1;
@@ -97,6 +98,9 @@ public:
     // LQR backward pass
     void bwd_lqr();
 
+    // Deals with all derivative related parts
+    void do_derivatives(mjData* d, int t);
+
     // Regularization
     void increase_mu();
     void decrease_mu();
@@ -104,11 +108,12 @@ public:
     // One Iteration
     void iterate();
 
-    // Till Convergence
-    void manager();
-
-
     void big_step(mjData *d);
+
+//    bool PositiveDefinite(actionMat_t Quu);
+
+    void RunMPC();
+
 };
 
 

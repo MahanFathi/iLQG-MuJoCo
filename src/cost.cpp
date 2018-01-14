@@ -144,14 +144,14 @@ stateVec_t cost::get_lx(stateVec_t x){
 
     // GRAD
 
-    Vx(3,0) = (k*(torso*cos(x(3,0)) + 2*thigh*cos(x(3,0) - x(4,0)) -
+    Vx(3,0) = (k_x*(torso*cos(x(3,0)) + 2*thigh*cos(x(3,0) - x(4,0)) -
                   2*leg*cos(x(3,0) - x(4,0) + x(4,0)))*(torso*sin(x(3,0)) +
                                                         2*thigh*sin(x(3,0) - x(4,0)) - 2*leg*sin(x(3,0) - x(4,0) + x(4,0))))/2;
 
-    Vx(4,0) = k*(thigh*cos(x(3,0) - x(4,0)) - leg*cos(x(3,0) - x(4,0) + x(4,0)))*
+    Vx(4,0) = k_x*(thigh*cos(x(3,0) - x(4,0)) - leg*cos(x(3,0) - x(4,0) + x(4,0)))*
               (-(torso*sin(x(3,0))) - 2*thigh*sin(x(3,0) - x(4,0)) + 2*leg*sin(x(3,0) - x(4,0) + x(4,0)));
 
-    Vx(5,0) = k*leg*cos(x(3,0) - x(4,0) + x(4,0))*(-(torso*sin(x(3,0))) - 2*thigh*sin(x(3,0) - x(4,0)) +
+    Vx(5,0) = k_x*leg*cos(x(3,0) - x(4,0) + x(4,0))*(-(torso*sin(x(3,0))) - 2*thigh*sin(x(3,0) - x(4,0)) +
                                                    2*leg*sin(x(3,0) - x(4,0) + x(4,0)));
 
     return Vx;
@@ -163,14 +163,14 @@ stateMat_t cost::get_lxx(stateVec_t x){
 
     // HESS
 
-    Vxx(3,3) = (k*(pow(torso,2)*cos(2*x(3,0)) +
+    Vxx(3,3) = (k_x*(pow(torso,2)*cos(2*x(3,0)) +
                    4*(pow(thigh,2)*cos(2*(x(3,0) - x(4,0))) +
                       thigh*torso*cos(2*x(3,0) - x(4,0)) -
                       2*leg*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
                       pow(leg,2)*cos(2*(x(3,0) - x(4,0) + x(5,0))) -
                       leg*torso*cos(2*x(3,0) - x(4,0) + x(5,0)))))/2.;
 
-    Vxx(3,4) = -(k*(2*pow(thigh,2)*cos(2*(x(3,0) - x(4,0))) +
+    Vxx(3,4) = -(k_x*(2*pow(thigh,2)*cos(2*(x(3,0) - x(4,0))) +
                     thigh*torso*cos(2*x(3,0) - x(4,0)) +
                     leg*(-4*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
                          2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) -
@@ -178,24 +178,24 @@ stateMat_t cost::get_lxx(stateVec_t x){
 
     Vxx(4,3) = Vxx(3,4);
 
-    Vxx(3,5) = k*leg*(-2*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
+    Vxx(3,5) = k_x*leg*(-2*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
                       2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) -
                       torso*cos(2*x(3,0) - x(4,0) + x(5,0)));
 
     Vxx(5,3) = Vxx(3,5);
 
-    Vxx(4,4) = -(k*leg*(-2*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
+    Vxx(4,4) = -(k_x*leg*(-2*thigh*cos(2*x(3,0) - 2*x(4,0) + x(5,0)) +
                         2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) +
                         torso*sin(x(3,0))*sin(x(3,0) - x(4,0) + x(5,0))));
 
-    Vxx(4,5) = 2*k*(pow(thigh*cos(x(3,0) - x(4,0)) - leg*cos(x(3,0) - x(4,0) + x(5,0)),2) +
+    Vxx(4,5) = 2*k_x*(pow(thigh*cos(x(3,0) - x(4,0)) - leg*cos(x(3,0) - x(4,0) + x(5,0)),2) +
                     (thigh*sin(x(3,0) - x(4,0)) - leg*sin(x(3,0) - x(4,0) + x(5,0)))*
                     (-(torso*sin(x(3,0)))/2. - thigh*sin(x(3,0) - x(4,0)) +
                      leg*sin(x(3,0) - x(4,0) + x(5,0))));
 
     Vxx(5,4) = Vxx(4,5);
 
-    Vxx(5,5) = k*leg*(2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) +
+    Vxx(5,5) = k_x*leg*(2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) +
                       (torso*sin(x(3,0)) + 2*thigh*sin(x(3,0) - x(4,0))) *
                       sin(x(3,0) - x(4,0) + x(5,0)));
 
@@ -241,11 +241,11 @@ mjtNum cost::get_cost(const mjData *d) {
     mjtNum instant_cost;
     Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
     Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
-    instant_cost = k * pow(com(0,0) - foot(0,0), 2.0) +
-                   k * pow(0.8 - (com(2,0) - foot(2,0)), 2.0) +
-                   pow(d->ctrl[0], 2.0) +
-                   pow(d->ctrl[1], 2.0) +
-                   pow(d->ctrl[2], 2.0);
+    instant_cost = k_x * pow(com(0,0) - foot(0,0), 2.0) +
+                   k_z * pow(0.55 - (com(2,0) - foot(2,0)), 2.0) +
+                   k_u * pow(d->ctrl[0], 2.0) +
+                   k_u * pow(d->ctrl[1], 2.0) +
+                   k_u * pow(d->ctrl[2], 2.0);
     return instant_cost;
 
 }
@@ -256,16 +256,16 @@ void cost::get_derivatives(const mjData *d, int t) {
 
     extraVec_t extra = get_extra(d);
 
-    lx[t] = 2.0 * k * extra(0,0) * extra_deriv.row(0).transpose();
-    lx[t] += 2.0 * k * (extra(1,0) - 0.8) * extra_deriv.row(1).transpose();
-    lxx[t] = 2.0 * k * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
-    lxx[t] += 2.0 * k * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
-    lu[t](0,0) = 2 * d->ctrl[0];
-    lu[t](1,0) = 2 * d->ctrl[1];
-    lu[t](2,0) = 2 * d->ctrl[2];
-    luu[t](0,0) = 2;
-    luu[t](1,1) = 2;
-    luu[t](2,2) = 2;
+    lx[t] = 2.0 * k_x * extra(0,0) * extra_deriv.row(0).transpose();
+    lx[t] += 2.0 * k_z * (extra(1,0) - 0.55) * extra_deriv.row(1).transpose();
+    lxx[t] = 2.0 * k_x * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lxx[t] += 2.0 * k_z * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
+    lu[t](0,0) = 2 * k_u * d->ctrl[0];
+    lu[t](1,0) = 2 * k_u * d->ctrl[1];
+    lu[t](2,0) = 2 * k_u * d->ctrl[2];
+    luu[t](0,0) = 2 * k_u;
+    luu[t](1,1) = 2 * k_u;
+    luu[t](2,2) = 2 * k_u;
 
 }
 

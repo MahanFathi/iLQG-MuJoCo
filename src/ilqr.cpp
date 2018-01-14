@@ -20,7 +20,7 @@ ilqr::ilqr(mjModel *m, mjData *d,
     printf("nQ: %d\tnV: %d\tnbody: %d\n", m->nq, m->nv, m->nbody);
 
     // initialize regularization parameters
-    mu = 0;
+    mu = 1e-3;
     mu_min = 1e-6;
     delta = 1.0;
     delta_0 = 2.0;
@@ -49,13 +49,13 @@ ilqr::ilqr(mjModel *m, mjData *d,
 
 
     // proceed for a few steps
-    for( int i = 0; i < 800; i++ )
-        mj_step(m, d);
+//    for( int i = 0; i < 200; i++ )
+//        mj_step(m, d);
 
 
     // run forward ilqr pass to initialize and more
     fwd_ctrl(true);
-    printf("Cost at start: \t%f\n", Cost.cost_to_go);
+
 
 
 }
@@ -129,9 +129,10 @@ void ilqr::fwd_ctrl(bool init=false) {
     Cost.add_cost(d_cp);
 
     if (!init)
-        printf("alpha = %.3f\t cost = %.2f\n", alpha, Cost.cost_to_go);
+        printf("\nalpha = %.3f\t cost = %.2f", alpha, Cost.cost_to_go);
 
     if (init) {
+        printf("Cost at start: \t%f\n", Cost.cost_to_go);
         min_cost = Cost.cost_to_go;
         prev_cost = Cost.cost_to_go;
         for( int t = 0; t < T; t++ ) {
@@ -146,22 +147,19 @@ void ilqr::fwd_ctrl(bool init=false) {
             mju_copy(d_cp->qvel, X[t].data() + nv, nv);
 
             // get linear dynamics TODO: probably not the fastest parallelization
-            Fx[t].setZero();
-            calc_derivatives(Fx[t].data(), Fu[t].data(), deriv, m, d_cp, &Cost, t);
-            Fx[t] += stateMat_t::Identity();
-            Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += step_ratio * m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
-            Cost.get_derivatives(d_cp, t);
+            do_derivatives(d_cp, t);
+
         }
         x[T] = X[T];
         X_MinCost[T] = X[T];
     }
-    else if (decay_count < decay_limit || Cost.cost_to_go < prev_cost) {
+    else if (decay_count < decay_limit || Cost.cost_to_go + 1e-2 < prev_cost) {
         // Hint: prev_cost is the min cost of this forward pass among various alphas,
         // while min_cost is the all-time lowest. Also note:
         // x, u --> prev_cost
         // X_MinCost, U_MinCost --> min_cost
 
-        if ( decay_count == 0 || Cost.cost_to_go < prev_cost ) {
+        if ( decay_count == 0 || Cost.cost_to_go + 1e-2 < prev_cost ) {
             prev_cost = Cost.cost_to_go;
             for (int t = 0; t < T; t++) {
                 x[t] = X[t];
@@ -169,7 +167,7 @@ void ilqr::fwd_ctrl(bool init=false) {
             }
             x[T] = X[T];
             if ( decay_count != 0 )
-                printf("Updated local min at decay: #%d\n", decay_count);
+                printf("\nUpdated local min at decay: #%d", decay_count);
         }
 
         if (Cost.cost_to_go < min_cost) {
@@ -207,11 +205,7 @@ void ilqr::fwd_ctrl(bool init=false) {
             mju_copy(d_cp->qvel, X[t].data() + nv, nv);
 
             // get linear dynamics TODO: probably not the fastest parallelization
-            Fx[t].setZero();
-            calc_derivatives(Fx[t].data(), Fu[t].data(), deriv, m, d_cp, &Cost, t);
-            Fx[t] += stateMat_t::Identity();
-            Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += step_ratio * m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
-            Cost.get_derivatives(d_cp, t);
+            do_derivatives(d_cp, t);
         }
     }
 
@@ -229,8 +223,12 @@ void ilqr::bwd_lqr() {
     // start with V and v = 0
     Vxx = Cost.get_lxx(X[T]);
     Vx = Cost.get_lx(X[T]);
+    Vxx = 0.5 * (Vxx + Vxx.transpose());
 
     bwd_flag = true; // true when bwd complete, false else
+
+//    Vxx.setZero();
+//    Vx.setZero();
 
     for( int t = T-1; t >= 0; t-- ){
 
@@ -256,11 +254,11 @@ void ilqr::bwd_lqr() {
 //        K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
 //        k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
 
-        K[t] = Quu.llt().solve(Qux) * (-1);
-        k[t] = Quu.llt().solve(Qu) * (-1);
+//        K[t] = Quu.llt().solve(Qux) * (-1);
+//        k[t] = Quu.llt().solve(Qu) * (-1);
 
-//        K[t] = - Quu.inverse() * Qux;
-//        k[t] = - Quu.inverse() * Qu;
+        K[t] = - Quu.inverse() * Qux;
+        k[t] = - Quu.inverse() * Qu;
 
 //        std::cout<< "\nQuu[" << t << "]: \n" << Quu << std::endl;
 //        std::cout<< "\nQxx[" << t << "]: \n" << Qxx << std::endl;
@@ -279,6 +277,19 @@ void ilqr::bwd_lqr() {
         Vxx = 0.5 * (Vxx + Vxx.transpose());
 
     }
+
+}
+
+
+void ilqr::do_derivatives(mjData* d, int t) {
+
+    Fx[t].setZero();
+    calc_derivatives(Fx[t].data(), Fu[t].data(), deriv, m, d, &Cost, t);
+    Fx[t] *= step_ratio * m->opt.timestep;
+    Fu[t] *= step_ratio * m->opt.timestep;
+    Fx[t] += stateMat_t::Identity();
+    Fx[t].block<DOFNUM, DOFNUM>(0, m->nv) += step_ratio * m->opt.timestep * Eigen::Matrix<mjtNum, DOFNUM, DOFNUM>::Identity();
+    Cost.get_derivatives(d, t);
 
 }
 
@@ -304,49 +315,79 @@ void ilqr::decrease_mu() {
 
 void ilqr::iterate() {
 
+    mjtNum PC = prev_cost;
     do {
-        bwd_lqr();
-    }
-    while(!bwd_flag);
+        do {
+            bwd_lqr();
+        } while (!bwd_flag);
+        fwd_ctrl();
+        if (PC > prev_cost)
+            increase_mu();
+    } while(PC < prev_cost || mu > max_mu );
 
     decrease_mu();
 
-    fwd_ctrl();
-
     if (done)
         printf("\nDone at iter %d.", iter);
-    else
-        printf("\nCost at iter %d:\t%f\n", iter, min_cost);
+    else {
+        printf("\nMin Cost So Far:\t%.2f", min_cost);
+        printf("\nCost at iter %d:\t%.2f\n", iter, prev_cost);
+    }
 
     iter++;
 
 }
 
 
-void ilqr::manager() {
-
-    do{
-
-        iterate();
-
-    }
-    while(!done);
-
-    done = false;
-
-    // convergence occurs when next backward pass causes a higher cost
-
-}
-
-
 void ilqr::big_step(mjData* d) {
 
-    for( int t = 0; t < step_ratio; t++ ){
-        mj_step1(m, d);
-        mj_step2(m, d);
-//        mju_printMat(d->ctrl, 1, 3);
-    }
+    for( int t = 0; t < step_ratio; t++ )
+        mj_step(m, d);
+
+}
+
+//}
+
+void ilqr::RunMPC() {
+
+
 
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//bool ilqr::PositiveDefinite(actionMat_t Quu) {
+//
+//    if( Quu(0,0) < 0 )
+//        return false;
+//    if (Quu.block<2,2>(0,0).determinant() < 0 )
+//        return false;
+//    if (Quu.determinant() < 0)
+//        return false;
+//
+//    return true;
+//

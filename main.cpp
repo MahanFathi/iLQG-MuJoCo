@@ -125,10 +125,11 @@ int main(int argc, char** argv) {
     int T = 100; // lqr optimization horizon
     mjtNum* deriv = (mjtNum*) mju_malloc(3*sizeof(mjtNum)*nv*nv);
 
-
+    for( int i = 0; i < 800; i++ )
+        mj_step(m, dmain);
 
    // make an instance of ilqr
-    ilqr ILQR(m, dc, deriv, T, argv[1]);
+    ilqr ILQR(m, dmain, deriv, T, argv[1]);
 //    ILQR.manager();
 
     // init GLFW
@@ -154,12 +155,8 @@ int main(int argc, char** argv) {
     glfwSetScrollCallback(window, scroll);
 
 
-    for( int i = 0; i < 800; i++ )
-        mj_step(m, dmain);
-
-
     int t = 0;
-    for( int iter = 0; iter < 20; iter++ ) {
+    for( int iter = 0; iter < 50; iter++ ) {
         d = mj_copyData(nullptr, m, dmain);
         t = 0;
         while (!glfwWindowShouldClose(window) && t < T) {
@@ -172,10 +169,11 @@ int main(int argc, char** argv) {
 
             while( d->time - simstart < 1.0/200.0 && t < T){ // I've messed with the timing
                 if ( t < T ){
+//                    printf("ITER %d\n", ILQR.iter);
                     mju_copy(d->ctrl, ILQR.u[t].data(), nu);
 //                    d->ctrl[0] = 0.5;
                     t++;
-                    mj_step(m, d);
+                    ILQR.big_step(d);
                 }
 
             }
