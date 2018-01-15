@@ -236,7 +236,7 @@ void ilqr::bwd_lqr() {
 
         // check if Quu is positive (semi)definite
         Eigen::LLT<actionMat_t> lltofQuu(Quu);
-        if (use_regularization)
+        if (pd_sanity)
         if(lltofQuu.info() == Eigen::NumericalIssue) {
             printf("\niter: \t%d \ntime: \t%d\n mu: \t%f\n", iter, t, mu);
             increase_mu();
@@ -317,13 +317,17 @@ void ilqr::iterate() {
 
     mjtNum PC = prev_cost;
     do {
+        if (mu > max_mu) {
+            printf("\nExceeded Maximum mu!");
+            break;
+        }
         do {
             bwd_lqr();
         } while (!bwd_flag);
         fwd_ctrl();
         if (PC > prev_cost)
             increase_mu();
-    } while(PC < prev_cost || mu > max_mu );
+    } while(PC < prev_cost);
 
     decrease_mu();
 

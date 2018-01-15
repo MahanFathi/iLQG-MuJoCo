@@ -122,10 +122,10 @@ int main(int argc, char** argv) {
     mjData* dc = mj_makeData(m);
 
 
-    int T = 100; // lqr optimization horizon
+    int T = 50; // lqr optimization horizon
     mjtNum* deriv = (mjtNum*) mju_malloc(3*sizeof(mjtNum)*nv*nv);
 
-    for( int i = 0; i < 800; i++ )
+    for( int i = 0; i < 8000; i++ )
         mj_step(m, dmain);
 
    // make an instance of ilqr

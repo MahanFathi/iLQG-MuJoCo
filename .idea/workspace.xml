@@ -13,15 +13,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ce5e4391-21b1-4012-80b2-7a1458332ea2" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/bin/MUJOCO_LOG.TXT" afterPath="$PROJECT_DIR$/bin/MUJOCO_LOG.TXT" />
       <change beforePath="$PROJECT_DIR$/bin/main" afterPath="$PROJECT_DIR$/bin/main" />
-      <change beforePath="$PROJECT_DIR$/include/cost.h" afterPath="$PROJECT_DIR$/include/cost.h" />
       <change beforePath="$PROJECT_DIR$/include/ilqr.h" afterPath="$PROJECT_DIR$/include/ilqr.h" />
       <change beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
-      <change beforePath="$PROJECT_DIR$/model/hopper.xml" afterPath="$PROJECT_DIR$/model/hopper.xml" />
       <change beforePath="$PROJECT_DIR$/src/cost.cpp" afterPath="$PROJECT_DIR$/src/cost.cpp" />
       <change beforePath="$PROJECT_DIR$/src/ilqr.cpp" afterPath="$PROJECT_DIR$/src/ilqr.cpp" />
-      <change beforePath="$PROJECT_DIR$/src/lindy.cpp" afterPath="$PROJECT_DIR$/src/lindy.cpp" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,11 +30,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="127" column="25" lean-forward="false" selection-start-line="127" selection-start-column="25" selection-end-line="127" selection-end-column="25" />
+            <state relative-caret-position="2440">
+              <caret line="127" column="26" lean-forward="false" selection-start-line="127" selection-start-column="26" selection-end-line="127" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -54,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ilqr.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ilqr.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ilqr.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="500">
-              <caret line="25" column="17" lean-forward="false" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+            <state relative-caret-position="6580">
+              <caret line="329" column="28" lean-forward="true" selection-start-line="329" selection-start-column="28" selection-end-line="329" selection-end-column="28" />
               <folding>
                 <element signature="e#40#57#0" expanded="true" />
               </folding>
@@ -69,8 +65,8 @@
       <file leaf-file-name="ilqr.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/ilqr.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="73" column="25" lean-forward="false" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
+            <state relative-caret-position="315">
+              <caret line="76" column="18" lean-forward="false" selection-start-line="76" selection-start-column="18" selection-end-line="76" selection-end-column="18" />
               <folding>
                 <element signature="e#81#98#0" expanded="true" />
               </folding>
@@ -81,11 +77,11 @@
       <file leaf-file-name="cost.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cost.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="244" column="33" lean-forward="false" selection-start-line="244" selection-start-column="33" selection-end-line="244" selection-end-column="33" />
+            <state relative-caret-position="537">
+              <caret line="132" column="0" lean-forward="false" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="30" />
               <folding>
                 <element signature="e#969#2677#0" expanded="true" />
-                <marker date="1515861608692" expanded="true" signature="968:2677" ph="..." />
+                <marker date="1516027493699" expanded="true" signature="968:2677" ph="..." />
               </folding>
             </state>
           </provider>
@@ -170,6 +166,8 @@
       <find>false</find>
       <find>ratio</find>
       <find>calc</find>
+      <find>regul</find>
+      <find>use_re</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -188,13 +186,13 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/include/lindy.h" />
         <option value="$PROJECT_DIR$/include/types.h" />
-        <option value="$PROJECT_DIR$/src/cost.cpp" />
         <option value="$PROJECT_DIR$/include/cost.h" />
         <option value="$PROJECT_DIR$/model/hopper.xml" />
         <option value="$PROJECT_DIR$/src/lindy.cpp" />
-        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/include/ilqr.h" />
+        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/src/ilqr.cpp" />
+        <option value="$PROJECT_DIR$/src/cost.cpp" />
       </list>
     </option>
   </component>
@@ -320,12 +318,12 @@
       <workItem from="1515321844706" duration="12145000" />
       <workItem from="1515436505895" duration="472000" />
       <workItem from="1515495584836" duration="1456000" />
-      <workItem from="1515508017532" duration="76386000" />
+      <workItem from="1515508017532" duration="79331000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="127019000" />
+    <option name="totallyTimeSpent" value="129964000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="14" y="14" width="1515" height="1031" extended-state="6" />
@@ -781,6 +779,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/ilqr.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="76" column="18" lean-forward="false" selection-start-line="76" selection-start-column="18" selection-end-line="76" selection-end-column="18" />
+          <folding>
+            <element signature="e#81#98#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/include/cost.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-49">
@@ -788,25 +796,6 @@
           <folding>
             <element signature="e#659#742#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cost.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="244" column="33" lean-forward="false" selection-start-line="244" selection-start-column="33" selection-end-line="244" selection-end-column="33" />
-          <folding>
-            <element signature="e#969#2677#0" expanded="true" />
-            <marker date="1515861608692" expanded="true" signature="968:2677" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="127" column="25" lean-forward="false" selection-start-line="127" selection-start-column="25" selection-end-line="127" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -818,23 +807,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/ilqr.h">
+    <entry file="file://$PROJECT_DIR$/src/ilqr.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="73" column="25" lean-forward="false" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
+        <state relative-caret-position="6580">
+          <caret line="329" column="28" lean-forward="true" selection-start-line="329" selection-start-column="28" selection-end-line="329" selection-end-column="28" />
           <folding>
-            <element signature="e#81#98#0" expanded="true" />
+            <element signature="e#40#57#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ilqr.cpp">
+    <entry file="file://$PROJECT_DIR$/src/cost.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="25" column="17" lean-forward="false" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+        <state relative-caret-position="537">
+          <caret line="132" column="0" lean-forward="false" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="30" />
           <folding>
-            <element signature="e#40#57#0" expanded="true" />
+            <element signature="e#969#2677#0" expanded="true" />
+            <marker date="1516027493699" expanded="true" signature="968:2677" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2440">
+          <caret line="127" column="26" lean-forward="false" selection-start-line="127" selection-start-column="26" selection-end-line="127" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>

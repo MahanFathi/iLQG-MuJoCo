@@ -130,8 +130,7 @@ void cost::get_derivatives(const mjData* d, int t) {
 /*      ASSUMING THIS CASE TO BE THE HOPPER       */
 /*################################################*/
 
-#if ACTNUM == 3
-#if DOFNUM == 6
+#if ACTNUM == 3 && DOFNUM == 6
 
 void cost::add_cost(const mjData *d) {
 
@@ -272,5 +271,4 @@ void cost::get_derivatives(const mjData *d, int t) {
 
 
 
-#endif
 #endif

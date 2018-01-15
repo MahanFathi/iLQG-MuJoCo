@@ -74,7 +74,7 @@ public:
     mjtNum max_mu = 1e12;
 
     bool bwd_flag;
-    bool use_regularization = false;
+    bool pd_sanity = false;
 
     int iter = 0;
     int min_iter = 50;
