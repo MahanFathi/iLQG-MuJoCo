@@ -37,13 +37,11 @@ public:
     mjtNum prev_cost;
     int decay_count = 0;
     int decay_limit = 10;
-
-    int maxiter = 1;
+    bool bool_backtrack = true;
 
     // Intermediate optimization vars
     stateMat_t Qxx;
     actionMat_t Quu;
-    state_action_Mat_t Qxu;
     action_state_Mat_t Qux;
     stateVec_t Qx;
     actionVec_t Qu;
@@ -59,7 +57,6 @@ public:
     state_action_MatThread Fu;
 
     int T; // optimization horizon
-    int step_ratio = 5; // >= 1
     int nv;
     int nu;
 
@@ -77,11 +74,18 @@ public:
     bool pd_sanity = false;
 
     int iter = 0;
-    int min_iter = 50;
     bool done = false;
 
     mjtNum torque_lower_bound = -1;
     mjtNum torque_upper_bound = +1;
+
+#if ACTNUM == 1 && DOFNUM == 2
+    int step_ratio = 1; // >= 1
+#endif
+
+#if ACTNUM == 3 && DOFNUM == 6
+    int step_ratio = 5; // >= 1
+#endif
 
     // constructor
     ilqr(mjModel *m, mjData *d,
@@ -90,7 +94,7 @@ public:
 
     // runs the forward pass on ilqr, stores new states, ...
     // calculates linear dynamics and cost matrices
-    void fwd_ctrl(bool init);
+    void rollout(bool init);
 
     // deconstructor: free stacks
     ~ilqr();
@@ -114,6 +118,7 @@ public:
 
     void RunMPC();
 
+    void backtrack();
 };
 
 

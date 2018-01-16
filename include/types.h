@@ -9,12 +9,16 @@
 #include <Eigen/StdVector>
 #include "mjmodel.h"
 
-///* HOPPER */
+/* LOGGING */
+#define LOGGING false
+
+
+/* HOPPER */
 #define DOFNUM 6
 #define ACTNUM 3
 #define EXTRAV 2
 
-///* INVERTED PENDULUM */
+/* INVERTED PENDULUM */
 //#define DOFNUM 2
 //#define ACTNUM 1
 //#define EXTRAV 2

@@ -47,27 +47,21 @@ ilqr::ilqr(mjModel *m, mjData *d,
         X[t].setZero();
     }
 
-
-    // proceed for a few steps
-//    for( int i = 0; i < 200; i++ )
-//        mj_step(m, d);
-
-
     // run forward ilqr pass to initialize and more
-    fwd_ctrl(true);
-
-
+    rollout(true);
 
 }
 
 
-void ilqr::fwd_ctrl(bool init=false) {
+void ilqr::rollout(bool init=false) {
 
     // run forward simulation for control inputs, save q & qdot and ...
     // calculate linear dynamics
 
+    // Updates X and U with K and k of backward pass
+
     // copy data for now
-    mjData* d_cp = mj_copyData(nullptr, m, d); // TODO: I think redefining this on every fwd_ctrl() callback is going to consume some time. There should be a better way for implementing this.
+    mjData* d_cp = mj_copyData(nullptr, m, d);
 
     Cost.reset_cost();
 
@@ -94,32 +88,11 @@ void ilqr::fwd_ctrl(bool init=false) {
         // instruct new controls
         mju_copy(d_cp->ctrl, U[t].data(), nu);
 
-//        std::cout << "\nU: \t" << U[t] << std::endl;
-
-//        printf("\n U[%d]: \t %f\n", t, U[t](0));
-//        printf("\n U[%d]: \t %f\n", t, d_cp->ctrl[0]);
-
         // add cost
         Cost.add_cost(d_cp);
 
-        // run with real dynamics
-//        for( int i = 0; i < 5; i++ ){
-//            mj_step1(m, d_cp);
-//            mj_step2(m, d_cp);
-//        }
+        // proceed
         big_step(d_cp);
-
-//        printf("State at time %d:\t\n", t);
-//        std::cout<<X[t]<<"\n";
-//        printf("K %d:\t\n", t);
-//        std::cout<<K[t]<<"\n";
-//        printf("k %d:\t\n", t);
-//        std::cout<<k[t]<<"\n";
-//        printf("Controls at time %d:\t\n", t);
-//        std::cout<<U[t]<<"\n";
-
-//        printf("\ntheta[%d]: \t%f\n", t, d_cp->qpos[1]);
-//        printf("\nU[%d]: \t%f\n", t, d_cp->ctrl[0]);
 
     }
 
@@ -128,8 +101,10 @@ void ilqr::fwd_ctrl(bool init=false) {
     mju_zero(d_cp->ctrl, nu); // assuming an identical final state cost
     Cost.add_cost(d_cp);
 
+#if LOGGING
     if (!init)
         printf("\nalpha = %.3f\t cost = %.2f", alpha, Cost.cost_to_go);
+#endif
 
     if (init) {
         printf("Cost at start: \t%f\n", Cost.cost_to_go);
@@ -153,7 +128,13 @@ void ilqr::fwd_ctrl(bool init=false) {
         x[T] = X[T];
         X_MinCost[T] = X[T];
     }
-    else if (decay_count < decay_limit || Cost.cost_to_go + 1e-2 < prev_cost) {
+    mj_deleteData(d_cp);
+
+}
+
+void ilqr::backtrack() {
+
+    if (decay_count < decay_limit || Cost.cost_to_go + 1e-2 < prev_cost) {
         // Hint: prev_cost is the min cost of this forward pass among various alphas,
         // while min_cost is the all-time lowest. Also note:
         // x, u --> prev_cost
@@ -166,8 +147,10 @@ void ilqr::fwd_ctrl(bool init=false) {
                 u[t] = U[t];
             }
             x[T] = X[T];
+#if LOGGING
             if ( decay_count != 0 )
                 printf("\nUpdated local min at decay: #%d", decay_count);
+#endif
         }
 
         if (Cost.cost_to_go < min_cost) {
@@ -180,13 +163,8 @@ void ilqr::fwd_ctrl(bool init=false) {
         }
         alpha *= decay;
         decay_count++;
-        fwd_ctrl(false);
-    }
-    else if (iter >= min_iter) {
-        done = true;
-        // re-init line-search params
-        decay_count = 0;
-        alpha = 1.0;
+        rollout(false);
+        bool_backtrack = true;
     }
     else {
         // re-init line-search params
@@ -198,6 +176,9 @@ void ilqr::fwd_ctrl(bool init=false) {
             U[t] = u[t];
         }
         X[T] = x[T];
+
+        mjData* d_cp = mj_copyData(nullptr, m, d);
+
         for( int t = 0; t < T; t++ ) {
             // use data from the latest X
             mju_copy(d_cp->ctrl, X[t].data() + 2*nv, nu);
@@ -207,9 +188,8 @@ void ilqr::fwd_ctrl(bool init=false) {
             // get linear dynamics TODO: probably not the fastest parallelization
             do_derivatives(d_cp, t);
         }
+        bool_backtrack = false;
     }
-
-    mj_deleteData(d_cp);
 
 }
 
@@ -319,15 +299,18 @@ void ilqr::iterate() {
     do {
         if (mu > max_mu) {
             printf("\nExceeded Maximum mu!");
-            break;
         }
         do {
             bwd_lqr();
         } while (!bwd_flag);
-        fwd_ctrl();
-        if (PC > prev_cost)
-            increase_mu();
-    } while(PC < prev_cost);
+        rollout();
+//        if (PC < Cost.cost_to_go)
+//            increase_mu();
+    } while(PC < Cost.cost_to_go);
+
+    do {
+        backtrack();
+    } while(bool_backtrack);
 
     decrease_mu();
 

@@ -102,15 +102,14 @@ int main(int argc, char** argv) {
 
 
     mjModel* m = 0;
-    if( strlen(argv[1])>4 && !strcmp(argv[1]+strlen(argv[1])-4, ".mjb") )
-        m = mj_loadModel(argv[1], NULL);
-    else
-        m = mj_loadXML(argv[1], NULL, NULL, 0);
-    if( !m )
-    {
-        printf("Could not load modelfile '%s'\n", argv[1]);
-        return 1;
-    }
+#if ACTNUM == 1 && DOFNUM == 2
+    m = mj_loadXML("../model/inverted_pendulum.xml", NULL, NULL, 0);
+    int t_0 = 120;
+#endif
+#if ACTNUM == 3 && DOFNUM == 6
+    m = mj_loadXML("../model/hopper.xml", NULL, NULL, 0);
+    int t_0 = 800;
+#endif
 
     // extract some handy parameters
     int nv = m->nv;
@@ -119,18 +118,15 @@ int main(int argc, char** argv) {
     // make mjData for main thread and converging thread
     mjData* dmain = mj_makeData(m);
     mjData* d = mj_makeData(m);
-    mjData* dc = mj_makeData(m);
-
 
     int T = 50; // lqr optimization horizon
-    mjtNum* deriv = (mjtNum*) mju_malloc(3*sizeof(mjtNum)*nv*nv);
+    auto* deriv = (mjtNum*) mju_malloc(3*sizeof(mjtNum)*nv*nv);
 
-    for( int i = 0; i < 8000; i++ )
+    for( int i = 0; i < t_0; i++ )
         mj_step(m, dmain);
 
    // make an instance of ilqr
     ilqr ILQR(m, dmain, deriv, T, argv[1]);
-//    ILQR.manager();
 
     // init GLFW
     if( !glfwInit() )
@@ -167,11 +163,9 @@ int main(int argc, char** argv) {
             mjtNum simstart = d->time;
 
 
-            while( d->time - simstart < 1.0/200.0 && t < T){ // I've messed with the timing
+            while( d->time - simstart < 1.0/200.0 && t < T){ // I've messed with the timing: 1.0/60.0
                 if ( t < T ){
-//                    printf("ITER %d\n", ILQR.iter);
                     mju_copy(d->ctrl, ILQR.u[t].data(), nu);
-//                    d->ctrl[0] = 0.5;
                     t++;
                     ILQR.big_step(d);
                 }

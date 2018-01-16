@@ -44,11 +44,12 @@ void cost::reset_cost() {
 
 }
 
+
+#if ACTNUM == 1 && DOFNUM == 2
+
 /*################################################*/
 /* ASSUMING THIS CASE TO BE THE INVERTED PENDULUM */
 /*################################################*/
-
-#if ACTNUM == 1 && DOFNUM == 2
 
 void cost::calc_costmats(const mjData *d, int t)
 {
@@ -126,11 +127,11 @@ void cost::get_derivatives(const mjData* d, int t) {
 #endif
 
 
+#if ACTNUM == 3 && DOFNUM == 6
+
 /*################################################*/
 /*      ASSUMING THIS CASE TO BE THE HOPPER       */
 /*################################################*/
-
-#if ACTNUM == 3 && DOFNUM == 6
 
 void cost::add_cost(const mjData *d) {
 
@@ -138,7 +139,7 @@ void cost::add_cost(const mjData *d) {
 
 }
 
-
+// I just use something analytical here for Vxx[T] and Vx[T], similar to the original cost
 stateVec_t cost::get_lx(stateVec_t x){
 
     // GRAD
@@ -152,6 +153,8 @@ stateVec_t cost::get_lx(stateVec_t x){
 
     Vx(5,0) = k_x*leg*cos(x(3,0) - x(4,0) + x(4,0))*(-(torso*sin(x(3,0))) - 2*thigh*sin(x(3,0) - x(4,0)) +
                                                    2*leg*sin(x(3,0) - x(4,0) + x(4,0)));
+
+    Vx /= 100;
 
     return Vx;
 
@@ -197,6 +200,8 @@ stateMat_t cost::get_lxx(stateVec_t x){
     Vxx(5,5) = k_x*leg*(2*leg*cos(2*(x(3,0) - x(4,0) + x(5,0))) +
                       (torso*sin(x(3,0)) + 2*thigh*sin(x(3,0) - x(4,0))) *
                       sin(x(3,0) - x(4,0) + x(5,0)));
+
+    Vxx /= 100;
 
     return Vxx;
 
@@ -267,8 +272,5 @@ void cost::get_derivatives(const mjData *d, int t) {
     luu[t](2,2) = 2 * k_u;
 
 }
-
-
-
 
 #endif

@@ -33,16 +33,13 @@ public:
 
 
     /*      ASSUMING THIS CASE TO BE THE HOPPER       */
-    #if ACTNUM == 1
-    #if DOFNUM == 2
+    #if ACTNUM == 1 && DOFNUM == 2
         float k = 1;          // relative weight in cost
-    #endif
     #endif
 
 
     /*      ASSUMING THIS CASE TO BE THE HOPPER       */
-    #if ACTNUM == 3
-    #if DOFNUM == 6
+    #if ACTNUM == 3 && DOFNUM == 6
         float k_x = 1e2;
         float k_z = 1e2;
         float k_u = 1e-4;
@@ -51,12 +48,9 @@ public:
         float thigh = 0.45;
         float leg = 0.5;
     #endif
-    #endif
 
 
     cost(const char *env, const mjModel* m, int T);
-
-    void calc_costmats(const mjData* d, int t);
 
     void add_cost(const mjData* d);
 
