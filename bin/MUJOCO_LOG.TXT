@@ -5674,3 +5674,423 @@ WARNING: Unknown warning type Time = 1.6000.
 Sun Jan 14 19:38:18 2018
 WARNING: Unknown warning type Time = 1.6000.
 
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:48 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:05:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:06:53 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:02 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:03 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:16 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:08:17 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:09:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:39 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:40 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:40 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:40 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:40 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:10:40 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:05 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:05 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:14:06 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:49 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:50 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:51 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:51 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:18:52 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+
+Tue Jan 16 22:24:18 2018
+WARNING: Unknown warning type Time = 1.6000.
+

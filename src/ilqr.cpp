@@ -8,6 +8,7 @@
 #include <lindy.h>
 #include "ilqr.h"
 #include <cmath>
+#include <Eigen/Eigenvalues>
 #include <boost/algorithm/clamp.hpp>
 
 ilqr::ilqr(mjModel *m, mjData *d,
@@ -24,6 +25,9 @@ ilqr::ilqr(mjModel *m, mjData *d,
     mu_min = 1e-6;
     delta = 1.0;
     delta_0 = 2.0;
+    mu_factor = 1.05;
+    lambda = 1.0;
+    lamb_factor = 1.0;
 
     // initialize value functions, etc.
     X.resize(T+1);
@@ -231,25 +235,21 @@ void ilqr::bwd_lqr() {
         Qu = Cost.lu[t] + Fu[t].transpose() * Vx;
 
         // K = -Quu^-1 Qux
-//        K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
-//        k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
+        if (LevenbergMarquardt){
+            actionMat_t Quu_inv = lm_inv(Quu, lambda);
+            K[t] = - Quu_inv * Qux;
+            k[t] = - Quu_inv * Qu;
+        }
+        else {
+            K[t] = Quu.fullPivHouseholderQr().solve(Qux) * (-1);
+            k[t] = Quu.fullPivHouseholderQr().solve(Qu) * (-1);
 
-//        K[t] = Quu.llt().solve(Qux) * (-1);
-//        k[t] = Quu.llt().solve(Qu) * (-1);
+//            K[t] = Quu.llt().solve(Qux) * (-1);
+//            k[t] = Quu.llt().solve(Qu) * (-1);
 
-        K[t] = - Quu.inverse() * Qux;
-        k[t] = - Quu.inverse() * Qu;
-
-//        std::cout<< "\nQuu[" << t << "]: \n" << Quu << std::endl;
-//        std::cout<< "\nQxx[" << t << "]: \n" << Qxx << std::endl;
-//        std::cout<< "\nQux[" << t << "]: \n" << Qux << std::endl;
-//        std::cout<< "\nVxx[" << t << "]: \n" << Vxx << std::endl;////
-//        std::cout<< "\nFx[" << t << "]: \n" << Fx[t] << std::endl;
-//        std::cout<< "\nFu[" << t << "]: \n" << Fu[t] << std::endl;
-//        std::cout<< "\nK[" << t << "]: \n" << K[t] << std::endl;
-//        std::cout<< "\nk[" << t << "]: \n" << k[t] << std::endl;
-//        std::cout<< "\nlx[" << t << "]: \n" << Cost.lx[t] << std::endl;
-//        std::cout<< "\nlu[" << t << "]: \n" << Cost.lu[t] << std::endl;
+//            K[t] = - Quu.inverse() * Qux;
+//            k[t] = - Quu.inverse() * Qu;
+        }
 
         // calc V and v
         Vxx = Qxx + K[t].transpose() * Quu * K[t] + K[t].transpose() * Qux + Qux.transpose() * K[t];
@@ -293,6 +293,39 @@ void ilqr::decrease_mu() {
 }
 
 
+void ilqr::big_step(mjData* d) {
+
+    for( int t = 0; t < step_ratio; t++ )
+        mj_step(m, d);
+
+}
+
+
+actionMat_t ilqr::lm_inv(actionMat_t Quu, mjtNum lambda) {
+
+    Eigen::EigenSolver<actionMat_t> Qei(Quu);
+
+    Eigen::Matrix<std::complex<mjtNum>, ACTNUM, 1> Q_evals = Qei.eigenvalues();
+
+    for( int i = 0; i < ACTNUM; i++ ) {
+        if (Q_evals(i).real() < 0) {
+            Q_evals(i).real(0);
+            Q_evals(i).imag(0);
+        }
+        Q_evals(i) += lambda;
+    }
+
+    Eigen::DiagonalMatrix<std::complex<mjtNum>, ACTNUM> Q_diag_evals;
+    Q_diag_evals.diagonal() = Q_evals.cwiseInverse();
+
+    Eigen::Matrix<std::complex<mjtNum>, ACTNUM, ACTNUM> Q_evecs = Qei.eigenvectors();
+
+    Eigen::Matrix<std::complex<mjtNum>, ACTNUM, ACTNUM> Quu_inv_comp = Q_evecs * Q_diag_evals * Q_evecs.transpose();
+    actionMat_t Quu_inv = Quu_inv_comp.real();
+    return Quu_inv;
+}
+
+
 void ilqr::iterate() {
 
     mjtNum PC = prev_cost;
@@ -304,8 +337,12 @@ void ilqr::iterate() {
             bwd_lqr();
         } while (!bwd_flag);
         rollout();
-//        if (PC < Cost.cost_to_go)
-//            increase_mu();
+        if (PC < Cost.cost_to_go) {
+//             increase_mu();
+            mu *= mu_factor;
+            if (LevenbergMarquardt)
+                lambda *= lamb_factor;
+        }
     } while(PC < Cost.cost_to_go);
 
     do {
@@ -313,6 +350,8 @@ void ilqr::iterate() {
     } while(bool_backtrack);
 
     decrease_mu();
+    if (LevenbergMarquardt)
+        lambda /= lamb_factor;
 
     if (done)
         printf("\nDone at iter %d.", iter);
@@ -325,15 +364,6 @@ void ilqr::iterate() {
 
 }
 
-
-void ilqr::big_step(mjData* d) {
-
-    for( int t = 0; t < step_ratio; t++ )
-        mj_step(m, d);
-
-}
-
-//}
 
 void ilqr::RunMPC() {
 
@@ -353,28 +383,3 @@ void ilqr::RunMPC() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//bool ilqr::PositiveDefinite(actionMat_t Quu) {
-//
-//    if( Quu(0,0) < 0 )
-//        return false;
-//    if (Quu.block<2,2>(0,0).determinant() < 0 )
-//        return false;
-//    if (Quu.determinant() < 0)
-//        return false;
-//
-//    return true;
-//

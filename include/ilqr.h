@@ -69,9 +69,15 @@ public:
     mjtNum delta;
     mjtNum delta_0;
     mjtNum max_mu = 1e12;
+    mjtNum mu_factor = 1.05;
+
+    mjtNum lambda;
+    mjtNum lamb_factor;
 
     bool bwd_flag;
     bool pd_sanity = false;
+    bool LevenbergMarquardt = false;
+
 
     int iter = 0;
     bool done = false;
@@ -95,6 +101,7 @@ public:
     // runs the forward pass on ilqr, stores new states, ...
     // calculates linear dynamics and cost matrices
     void rollout(bool init);
+    void backtrack();
 
     // deconstructor: free stacks
     ~ilqr();
@@ -109,16 +116,10 @@ public:
     void increase_mu();
     void decrease_mu();
 
-    // One Iteration
-    void iterate();
-
     void big_step(mjData *d);
-
-//    bool PositiveDefinite(actionMat_t Quu);
-
+    actionMat_t lm_inv(actionMat_t Quu, mjtNum lambda);
+    void iterate();
     void RunMPC();
-
-    void backtrack();
 };
 
 
