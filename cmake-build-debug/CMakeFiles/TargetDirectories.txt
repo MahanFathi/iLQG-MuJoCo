@@ -1,3 +1,0 @@
-/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/mahan/Mahan/UnderConstruction/iLQG-MuJoCo/cmake-build-debug/CMakeFiles/ilgq.dir
