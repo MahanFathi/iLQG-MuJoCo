@@ -42,7 +42,7 @@ public:
     #if ACTNUM == 3 && DOFNUM == 6
         float k_x = 1e2;
         float k_z = 1e2;
-        float k_u = 1e-4;
+        float k_u = 1e-0;
         // float stance_z = 1.25;
         float torso = 0.4;
         float thigh = 0.45;

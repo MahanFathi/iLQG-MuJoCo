@@ -1,4 +1,6 @@
+// Runs the Visual Environment for a few Iterations
 #include <iostream>
+#include <cstdlib>
 #include <cstring>
 #include <lindy.h>
 #include "mujoco.h"
@@ -108,7 +110,7 @@ int main(int argc, char** argv) {
 #endif
 #if ACTNUM == 3 && DOFNUM == 6
     m = mj_loadXML("../model/hopper.xml", NULL, NULL, 0);
-    int t_0 = 800;
+    int t_0 = atoi(argv[1]);
 #endif
 
     // extract some handy parameters
@@ -127,6 +129,13 @@ int main(int argc, char** argv) {
 
    // make an instance of ilqr
     ilqr ILQR(m, dmain, deriv, T, argv[1]);
+
+    for( int i = 0; i < 500; i++ ) {
+        printf("#################################\n");
+        printf("\t\tTIME:%d\n", i);
+        printf("#################################\n");
+        ILQR.RunMPC();
+    }
 
     // init GLFW
     if( !glfwInit() )

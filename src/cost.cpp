@@ -12,9 +12,9 @@ cost::cost(const char *env, const mjModel* m, int T): m(m), T(T)
 {
     cost_to_go = 0.0;
 
-    lx.resize(T+1);
+    lx.resize(T);
     lu.resize(T);
-    lxx.resize(T+1);
+    lxx.resize(T);
     luu.resize(T);
 
     Vx.setZero();
@@ -26,8 +26,6 @@ cost::cost(const char *env, const mjModel* m, int T): m(m), T(T)
         lxx[t].setZero();
         luu[t].setZero();
     }
-    lx[T].setZero();
-    lxx[T].setZero();
 
 //    // set cost matrices to zero at first
 //    for( int t = 0; t < T; t++ ){
@@ -246,7 +244,7 @@ mjtNum cost::get_cost(const mjData *d) {
     Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
     Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
     instant_cost = k_x * pow(com(0,0) - foot(0,0), 2.0) +
-                   k_z * pow(0.55 - (com(2,0) - foot(2,0)), 2.0) +
+                   k_z * pow(0.8 - (com(2,0) - foot(2,0)), 2.0) +
                    k_u * pow(d->ctrl[0], 2.0) +
                    k_u * pow(d->ctrl[1], 2.0) +
                    k_u * pow(d->ctrl[2], 2.0);
@@ -261,7 +259,7 @@ void cost::get_derivatives(const mjData *d, int t) {
     extraVec_t extra = get_extra(d);
 
     lx[t] = 2.0 * k_x * extra(0,0) * extra_deriv.row(0).transpose();
-    lx[t] += 2.0 * k_z * (extra(1,0) - 0.55) * extra_deriv.row(1).transpose();
+    lx[t] += 2.0 * k_z * (extra(1,0) - 0.8) * extra_deriv.row(1).transpose();
     lxx[t] = 2.0 * k_x * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
     lxx[t] += 2.0 * k_z * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
     lu[t](0,0) = 2 * k_u * d->ctrl[0];

@@ -74,13 +74,20 @@ public:
     mjtNum lambda;
     mjtNum lamb_factor;
 
+    int max_iter = 10;
+
     bool bwd_flag;
     bool pd_sanity = false;
     bool LevenbergMarquardt = false;
 
-
     int iter = 0;
     bool done = false;
+
+    action_state_MatThread K_MinCost;
+    actionThread k_MinCost;
+    mjtNum alpha_MinCost = 1.0;
+    bool bool_updateK_MinCost;
+    action_state_Mat_t K_MPC;
 
     mjtNum torque_lower_bound = -1;
     mjtNum torque_upper_bound = +1;
@@ -100,7 +107,7 @@ public:
 
     // runs the forward pass on ilqr, stores new states, ...
     // calculates linear dynamics and cost matrices
-    void rollout(bool init);
+    void rollout(bool init, mjtNum alpha_given);
     void backtrack();
 
     // deconstructor: free stacks
@@ -108,6 +115,9 @@ public:
 
     // LQR backward pass
     void bwd_lqr();
+
+    // Approximate Vx[T] with Vx[T-1] and Vxx[T-1]
+    stateVec_t get_lx_T(void);
 
     // Deals with all derivative related parts
     void do_derivatives(mjData* d, int t);
@@ -117,6 +127,7 @@ public:
     void decrease_mu();
 
     void big_step(mjData *d);
+    void MPC_step(bool feedback=true);
     actionMat_t lm_inv(actionMat_t Quu, mjtNum lambda);
     void iterate();
     void RunMPC();

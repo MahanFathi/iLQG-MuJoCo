@@ -38,6 +38,8 @@ ilqr::ilqr(mjModel *m, mjData *d,
     U_MinCost.resize(T);
     K.resize(T);
     k.resize(T);
+    K_MinCost.resize(T);
+    k_MinCost.resize(T);
     Fx.resize(T);
     Fu.resize(T);
 
@@ -47,17 +49,19 @@ ilqr::ilqr(mjModel *m, mjData *d,
         Fu[t].setZero();
         k[t].setZero();
         K[t].setZero();
+        k_MinCost[t].setZero();
+        K_MinCost[t].setZero();
         U[t].setZero();
         X[t].setZero();
     }
 
     // run forward ilqr pass to initialize and more
-    rollout(true);
+    rollout(true, 1.0);
 
 }
 
 
-void ilqr::rollout(bool init=false) {
+void ilqr::rollout(bool init=false, mjtNum alpha_given=1) {
 
     // run forward simulation for control inputs, save q & qdot and ...
     // calculate linear dynamics
@@ -69,6 +73,12 @@ void ilqr::rollout(bool init=false) {
 
     Cost.reset_cost();
 
+    mjtNum alpha0;
+    if (init)
+        alpha0 = alpha_given;
+    else
+        alpha0 = alpha;
+
     for( int t = 0; t < T; t++ )
     {
 
@@ -76,7 +86,7 @@ void ilqr::rollout(bool init=false) {
         mju_copy(del_x.data(), d_cp->qpos, nv);
         mju_copy(del_x.data() + nv, d_cp->qvel, nv);
         del_x -= X[t];
-        del_u = K[t] * del_x + alpha * k[t];
+        del_u = K[t] * del_x + alpha0 * k[t];
 
         // store new controls
         U[t] += del_u;
@@ -107,7 +117,7 @@ void ilqr::rollout(bool init=false) {
 
 #if LOGGING
     if (!init)
-        printf("\nalpha = %.3f\t cost = %.2f", alpha, Cost.cost_to_go);
+        printf("\nalpha = %.3f\t cost = %.2f", alpha0, Cost.cost_to_go);
 #endif
 
     if (init) {
@@ -158,6 +168,11 @@ void ilqr::backtrack() {
         }
 
         if (Cost.cost_to_go < min_cost) {
+            alpha_MinCost = alpha;
+            for (int t = 0; t < T; t++) {
+                k_MinCost[t] = k[t];
+                K_MinCost[t] = K[t];
+            }
             for (int t = 0; t < T; t++) {
                 X_MinCost[t] = X[t];
                 U_MinCost[t] = U[t];
@@ -204,15 +219,17 @@ ilqr::~ilqr() {
 
 void ilqr::bwd_lqr() {
 
-    // start with V and v = 0
-    Vxx = Cost.get_lxx(X[T]);
-    Vx = Cost.get_lx(X[T]);
+    // init Vx and Vxx
+    Vx = get_lx_T();
+    Vxx = Cost.lxx[T-1];
+    // Vx = Cost.get_lx(X[T]);
+    // Vxx = Cost.get_lxx(X[T]);
     Vxx = 0.5 * (Vxx + Vxx.transpose());
 
     bwd_flag = true; // true when bwd complete, false else
 
-//    Vxx.setZero();
-//    Vx.setZero();
+    // Vx.setZero();
+    // Vxx.setZero();
 
     for( int t = T-1; t >= 0; t-- ){
 
@@ -258,6 +275,19 @@ void ilqr::bwd_lqr() {
 
     }
 
+    K_MPC = K[0];
+
+}
+
+
+stateVec_t ilqr::get_lx_T(void) {
+
+    // Approximate Vx[T] with Vx[T-1] and Vxx[T-1]
+
+    stateVec_t Vx_T;
+    Vx_T = Cost.lx[T-1] + Cost.lxx[T-1] * (X[T] - X[T-1]);
+    return Vx_T;
+
 }
 
 
@@ -288,7 +318,7 @@ void ilqr::decrease_mu() {
     if ( mu * delta > mu_min )
         mu = mu * delta;
     else
-        mu = 0.0;
+        mu = mu_min;
 
 }
 
@@ -332,6 +362,7 @@ void ilqr::iterate() {
     do {
         if (mu > max_mu) {
             printf("\nExceeded Maximum mu!");
+            break;
         }
         do {
             bwd_lqr();
@@ -349,7 +380,8 @@ void ilqr::iterate() {
         backtrack();
     } while(bool_backtrack);
 
-    decrease_mu();
+    if (mu < max_mu)
+        decrease_mu();
     if (LevenbergMarquardt)
         lambda /= lamb_factor;
 
@@ -367,12 +399,58 @@ void ilqr::iterate() {
 
 void ilqr::RunMPC() {
 
+    // iterate to get some trajectory, take the first action,
+    // proceed the simulation for the main mjData, re-init trajectory with rollout;
 
+    static int tt = 0;
+    do {
+        iterate();
+        printf("global iter: %d\n", tt++);
+    }while(iter < max_iter && mu < max_mu);
+
+    iter = 0;
+    mu = 1e-3;
+
+    // take the minimum cost action from U_MinCost
+    MPC_step(false);
+
+    // put k[t+1] in k[t]
+    std::rotate(k_MinCost.begin(), k_MinCost.begin()+1, k_MinCost.end());
+    std::rotate(K_MinCost.begin(), K_MinCost.begin()+1, K_MinCost.end());
+    k_MinCost[T-1].setZero();
+    K_MinCost[T-1].setZero();
+
+    for (int t = 0; t < T; t++) {
+        k[t] = k_MinCost[t];
+        K[t] = K_MinCost[t];
+    }
+
+    // init trajectory
+    rollout(true, alpha_MinCost);
 
 }
 
 
+void ilqr::MPC_step(bool feedback) {
 
+    // uses feedbacks along the step
+    // here d is the main data thread of simulation
+
+    stateVec_t x_cur;
+    actionVec_t u;
+    for( int t = 0; t < step_ratio; t++ ){
+        mj_step1(m, d);
+        u = U_MinCost[0];
+        if (feedback) {
+            mju_copy(x_cur.data(), d->qpos, nv);
+            mju_copy(x_cur.data()+nv, d->qvel, nv);
+            u += K_MPC * (x_cur - X_MinCost[1]);
+        }
+        mju_copy(d->ctrl, u.data(), nu);
+        mj_step2(m, d);
+    }
+
+}
 
 
 
