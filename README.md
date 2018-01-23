@@ -2,7 +2,7 @@
 Iterative LQG for a couple of MuJoCo models
 
 ### Demo for _Inverted Pendulum_ and _Hopper_
-A few iterations before convergence is shown here. Hopper in particular does crazy stuff, but it will get there. This whole process below is considered as a signle MPC run. You can set contact solref[0] to a slightly higher number in the model, for a more smooth dynamics and hence better derivative behaviors. 
+A few iterations before convergence is shown here. Hopper in particular does crazy stuff, but it will get there. This whole process below is considered as a signle MPC run. You can set contact solref[0] to a slightly higher number in the model, for more smooth dynamics and hence better derivative behaviors. 
 
 <img src="https://i.imgur.com/kOUsrXA.gif" width="200"> <img src="https://i.imgur.com/8z8WXNd.gif" width="200"> 
 
