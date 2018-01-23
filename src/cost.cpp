@@ -49,20 +49,19 @@ void cost::reset_cost() {
 /* ASSUMING THIS CASE TO BE THE INVERTED PENDULUM */
 /*################################################*/
 
-void cost::calc_costmats(const mjData *d, int t)
-{
-    // TODO: only for cart-pole. extend.
-
-    lx[t](1,0) = 2 * k * d->qpos[1];
-    lx[t](3,0) = 2 * k * d->qvel[1];
-    lxx[t](1,1) = 2 * k;
-    lxx[t](3,3) = 2 * k;
-
-    lu[t](0,0) = 2 * d->ctrl[0];
-    luu[t](0,0) = 2;
-
-
-}
+//void cost::calc_costmats(const mjData *d, int t)
+//{
+//
+//    lx[t](1,0) = 2 * k * d->qpos[1];
+//    lx[t](3,0) = 2 * k * d->qvel[1];
+//    lxx[t](1,1) = 2 * k;
+//    lxx[t](3,3) = 2 * k;
+//
+//    lu[t](0,0) = 2 * d->ctrl[0];
+//    luu[t](0,0) = 2;
+//
+//
+//}
 
 void cost::add_cost(const mjData *d) {
 
@@ -232,9 +231,9 @@ extraVec_t cost::get_extra(const mjData *d) {
     extraVec_t extra = extraVec_t::Zero();
     Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
     Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
-    // Eigen::Matrix<mjtNum, 3, 1> torso = get_body_coor(d, 1); // id 1 corresponds to torso
+    Eigen::Matrix<mjtNum, 3, 1> torso = get_body_coor(d, 1); // id 1 corresponds to torso
     extra(0,0) = com(0, 0) - foot(0,0); // x offset
-    extra(1,0) = com(2, 0) - foot(2,0); // z stance
+    extra(1,0) = torso(2, 0) - foot(2,0); // z stance
 
 }
 
@@ -243,8 +242,9 @@ mjtNum cost::get_cost(const mjData *d) {
     mjtNum instant_cost;
     Eigen::Matrix<mjtNum, 3, 1> com = get_com(d);
     Eigen::Matrix<mjtNum, 3, 1> foot = get_body_coor(d, 4); // id 4 corresponds to foot
+    Eigen::Matrix<mjtNum, 3, 1> torso = get_body_coor(d, 1); // id 1 corresponds to torso
     instant_cost = k_x * pow(com(0,0) - foot(0,0), 2.0) +
-                   k_z * pow(0.8 - (com(2,0) - foot(2,0)), 2.0) +
+                   k_z * pow(2.0 - (torso(2,0) - foot(2,0)), 2.0) +
                    k_u * pow(d->ctrl[0], 2.0) +
                    k_u * pow(d->ctrl[1], 2.0) +
                    k_u * pow(d->ctrl[2], 2.0);
@@ -259,7 +259,7 @@ void cost::get_derivatives(const mjData *d, int t) {
     extraVec_t extra = get_extra(d);
 
     lx[t] = 2.0 * k_x * extra(0,0) * extra_deriv.row(0).transpose();
-    lx[t] += 2.0 * k_z * (extra(1,0) - 0.8) * extra_deriv.row(1).transpose();
+    lx[t] += 2.0 * k_z * (extra(1,0) - 2.0) * extra_deriv.row(1).transpose();
     lxx[t] = 2.0 * k_x * extra_deriv.row(0).transpose() * extra_deriv.row(0); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
     lxx[t] += 2.0 * k_z * extra_deriv.row(1).transpose() * extra_deriv.row(1); // Approximate. See: https://math.stackexchange.com/questions/2349026/why-is-the-approximation-of-hessian-jtj-reasonable
     lu[t](0,0) = 2 * k_u * d->ctrl[0];

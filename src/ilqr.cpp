@@ -397,7 +397,7 @@ void ilqr::iterate() {
 }
 
 
-void ilqr::RunMPC() {
+actionVec_t ilqr::RunMPC() {
 
     // iterate to get some trajectory, take the first action,
     // proceed the simulation for the main mjData, re-init trajectory with rollout;

@@ -68,7 +68,7 @@ public:
     mjtNum mu_min;
     mjtNum delta;
     mjtNum delta_0;
-    mjtNum max_mu = 1e12;
+    mjtNum max_mu = 1e30;
     mjtNum mu_factor = 1.05;
 
     mjtNum lambda;
@@ -130,7 +130,7 @@ public:
     void MPC_step(bool feedback=true);
     actionMat_t lm_inv(actionMat_t Quu, mjtNum lambda);
     void iterate();
-    void RunMPC();
+    actionVec_t RunMPC();
 };
 
 

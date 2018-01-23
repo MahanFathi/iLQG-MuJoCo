@@ -130,12 +130,14 @@ int main(int argc, char** argv) {
    // make an instance of ilqr
     ilqr ILQR(m, dmain, deriv, T, argv[1]);
 
-    for( int i = 0; i < 500; i++ ) {
-        printf("#################################\n");
-        printf("\t\tTIME:%d\n", i);
-        printf("#################################\n");
-        ILQR.RunMPC();
-    }
+//    for( int i = 0; i < 500; i++ ) {
+//        printf("#################################\n");
+//        printf("\t\tTIME:%d\n", i);
+//        printf("#################################\n");
+//        ILQR.RunMPC();
+//    }
+
+//    mju_scl(m->cam_pos0, m->cam_pos0, 20, 3);
 
     // init GLFW
     if( !glfwInit() )
@@ -158,6 +160,8 @@ int main(int argc, char** argv) {
     glfwSetCursorPosCallback(window, mouse_move);
     glfwSetMouseButtonCallback(window, mouse_button);
     glfwSetScrollCallback(window, scroll);
+
+    cam.distance *= 1.5;
 
 
     int t = 0;
