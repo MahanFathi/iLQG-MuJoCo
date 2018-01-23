@@ -4,7 +4,7 @@ Iterative LQG for a couple of MuJoCo models
 ### Demo for _Inverted Pendulum_ and _Hopper_
 A few iterations before convergence is shown here. Hopper in particular does crazy stuff, but it will get there. This whole process below is considered as a signle MPC run. 
 
-<img src="https://i.imgur.com/4zxjevv.gif" width="200"> <img src="https://i.imgur.com/8z8WXNd.gif" width="200"> 
+<img src="https://i.imgur.com/kOUsrXA.gif" width="200"> <img src="https://i.imgur.com/8z8WXNd.gif" width="200"> 
 
 ### This Repo Contains:
 - Iterative LQR algorithm, based on this [paper](https://homes.cs.washington.edu/~todorov/papers/TassaIROS12.pdf
