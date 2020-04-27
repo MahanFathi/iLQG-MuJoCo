@@ -8,7 +8,7 @@
 #include <lindy.h>
 #include "ilqr.h"
 #include <cmath>
-#include <Eigen/Eigenvalues>
+#include <eigen3/Eigen/Eigenvalues>
 #include <boost/algorithm/clamp.hpp>
 
 ilqr::ilqr(mjModel *m, mjData *d,

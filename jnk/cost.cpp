@@ -6,7 +6,7 @@
 #include <cmath>
 #include <mujoco.h>
 #include "cost.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 cost::cost(const char *env, const mjModel* m, int T): m(m), T(T)
 {
