@@ -11,11 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 #include "mujoco.h"
 #include <GLFW/glfw3.h>
 
 #include "update.h"
+#include "derivative.h"
 
 // MuJoCo data structures
 mjModel* m = NULL;                  // MuJoCo model
@@ -147,6 +149,13 @@ int main(int argc, const char** argv)
     glfwSetCursorPosCallback(window, mouseMove);
     glfwSetMouseButtonCallback(window, mouseButton);
     glfwSetScrollCallback(window, scroll);
+
+    int derivativesSize = m->nv*(2*m->nv+m->nu);
+    mjtNum* deriv = (mjtNum*) mju_malloc(m->nv*(2*m->nv+m->nu)*sizeof(mjtNum));
+    getDerivatives(m, d, deriv);
+
+    for (auto i = 0; i < derivativesSize; i++)
+        std::cout << deriv[i] << '\n';
 
     // run main loop, target real-time simulation and 60 fps rendering
     while( !glfwWindowShouldClose(window) )
