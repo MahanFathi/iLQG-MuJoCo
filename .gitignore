@@ -1,0 +1,18 @@
+# gtags
+GPATH
+GRTAGS
+GTAGS
+
+# make outputs
+obj
+bin
+main
+
+# key
+mjkey.txt
+
+# emacs stuff
+.clang_complete
+
+# mujoco log
+MUJOCO_LOG.TXT
