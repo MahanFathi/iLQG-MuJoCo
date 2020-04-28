@@ -13,7 +13,7 @@ MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/bin
 OUT_DIR=$(OBJ_DIR)/$(SRC_DIR)
 
 CC=clang++
-CFLAGS=-I. -I$(INC_DIR)/ $(MJ_FLAGS) -std=c++11 -O3 -pthread -mavx -Wl,-rpath,'$$ORIGIN'
+CFLAGS=-I. -I$(INC_DIR)/ $(MJ_FLAGS) -std=c++17 -O3 -pthread -mavx -Wl,-rpath,'$$ORIGIN'
 
 LIBS=-lpthread -fopenmp
 LIBS_GL=-lmujoco200 -lGLEW -lGLU -lGL -lglfw

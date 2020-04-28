@@ -16,8 +16,8 @@
 #include "mujoco.h"
 #include <GLFW/glfw3.h>
 
+#include "lqr.h"
 #include "update.h"
-#include "derivative.h"
 
 // MuJoCo data structures
 mjModel* m = NULL;                  // MuJoCo model
@@ -150,12 +150,28 @@ int main(int argc, const char** argv)
     glfwSetMouseButtonCallback(window, mouseButton);
     glfwSetScrollCallback(window, scroll);
 
-    int derivativesSize = m->nv*(2*m->nv+m->nu);
-    mjtNum* deriv = (mjtNum*) mju_malloc(m->nv*(2*m->nv+m->nu)*sizeof(mjtNum));
-    getDerivatives(m, d, deriv);
+    for (auto i = 0; i < 500; i++)
+        mj_step(m, d);
 
-    for (auto i = 0; i < derivativesSize; i++)
-        std::cout << deriv[i] << '\n';
+    LQR* lqr = new LQR(m, d);
+    std::cout << *(lqr->A) << '\n';
+    lqr->updateDerivatives();
+    Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> q(d->qpos);
+    Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> qvel(d->qvel);
+    Eigen::Map<Eigen::Matrix<mjtNum, nu, 1>> qctrl(d->ctrl);
+    x_t x;
+    u_t u;
+    x << q, qvel;
+    u << qctrl;
+    x_t xNext = *(lqr->A) * x + *(lqr->B) * u;
+    lqr->updateDerivatives();
+    std::cout << xNext << '\n';
+    std::cout << "==============" << '\n';
+    mj_step(m, d);
+    x << q, qvel;
+    std::cout << x << '\n';
+    std::cout << "==============" << '\n';
+    std::cout << xNext - x << '\n';
 
     // run main loop, target real-time simulation and 60 fps rendering
     while( !glfwWindowShouldClose(window) )

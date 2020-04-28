@@ -26,14 +26,13 @@
 
 
 // gloval variables: internal
-const int MAXTHREAD = 64;   // maximum number of threads allowed
+const int MAXTHREAD = 8;   // maximum number of threads allowed
 
 
 // global variables: user-defined, with defaults
 int nthread = 0;            // number of parallel threads (default set later)
 int niter = 30;             // fixed number of solver iterations for finite-differencing
 int nwarmup = 3;            // center point repetitions to improve warmstart
-int nepoch = 20;            // number of timing epochs
 double eps = 1e-6;          // finite-difference epsilon
 
 
@@ -96,7 +95,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         mju_copy(temp, output, nv);
 
         // perturb selected target -
-        d->ctrl[i] -= 2*eps;
+        d->ctrl[i] = dmain->ctrl[i] - eps;
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -124,7 +123,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         mju_copy(temp, output, nv);
 
         // perturb velocity -
-        d->qvel[i] -= 2*eps;
+        d->qvel[i] = dmain->qvel[i] - eps;
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -191,6 +190,9 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_NONE, 1);
 
+        // undo perturbation
+        mju_copy(d->qpos, dmain->qpos, m->nq);
+
         // compute column i of derivative 0
         for( int j=0; j<nv; j++ )
             deriv[i + j*nv] = (temp[j] - output[j])/(2*eps);
@@ -200,7 +202,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
 }
 
 
-void getDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv)
+void calcMJDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv)
 {
 
     // deriv: dacc/dpos, dacc/dvel, dacc/dctrl
