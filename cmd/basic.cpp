@@ -16,7 +16,6 @@
 #include "mujoco.h"
 #include <GLFW/glfw3.h>
 
-#include "lqr.h"
 #include "mjderivative.h"
 #include "update.h"
 

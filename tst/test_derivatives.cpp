@@ -6,7 +6,7 @@
 #include <eigen3/Eigen/Core>
 #include "mujoco.h"
 
-#include "lqr.h"
+#include "linear_dynamics.h"
 #include "mjderivative.h"
 #include "update.h"
 
@@ -14,41 +14,44 @@
 int main(int argc, const char** argv)
 {
 
+    using x_t = LinearDynamics<6, 3>::x_t;
+    using u_t = LinearDynamics<6, 3>::u_t;
+
     // activate mujoco
     mj_activate("mjkey.txt");
 
     // create model and data
     char error[1000] = "Could not load binary model";
-    mjModel* m = mj_loadXML(argv[1], 0, error, 1000);
-    mjData* d_star = mj_makeData(m);
+    mjModel* m = mj_loadXML("./res/hopper.xml", 0, error, 1000);
+    mjData* dStar = mj_makeData(m);
 
     // advance simulation
     for (auto i = 0; i < 500; i++)
-        mj_step(m, d_star);
+        mj_step(m, dStar);
 
     // bind data to eigen
-    Eigen::Map<Eigen::VectorXd> q_star(d_star->qpos, m->nv);
-    Eigen::Map<Eigen::VectorXd> qvel_star(d_star->qvel, m->nv);
-    Eigen::Map<Eigen::VectorXd> ctrl_star(d_star->ctrl, m->nu);
+    Eigen::Map<Eigen::VectorXd> qStar(dStar->qpos, m->nv);
+    Eigen::Map<Eigen::VectorXd> qvelStar(dStar->qvel, m->nv);
+    Eigen::Map<Eigen::VectorXd> ctrlStar(dStar->ctrl, m->nu);
 
     // change controls
-    ctrl_star = ctrl_star.array() - 0.1;
+    ctrlStar = ctrlStar.array() - 0.1;
 
     // save first state and contorls
-    x_t x_star; x_star << q_star, qvel_star;
-    u_t u_star; u_star << ctrl_star;
+    x_t x_star; x_star << qStar, qvelStar;
+    u_t u_star; u_star << ctrlStar;
 
     // linearize around set state and contorl
-    LQR* lqr = new LQR(m, d_star);
-    lqr->updateDerivatives();
+    LinearDynamics<6, 3>* ld = new LinearDynamics<6, 3>(m, dStar);
+    ld->updateDerivatives();
 
     // copy data to d_prime
     mjData* d = mj_makeData(m);
-    cpMjData(m, d, d_star);
+    cpMjData(m, d, dStar);
 
-    // advance simulation on d_star and save next state
-    mj_step(m, d_star);
-    x_t x_star_next; x_star_next << q_star, qvel_star;
+    // advance simulation on dStar and save next state
+    mj_step(m, dStar);
+    x_t xStarNext; xStarNext << qStar, qvelStar;
 
     // bind data to eigen
     Eigen::Map<Eigen::VectorXd> q(d->qpos, m->nv);
@@ -65,15 +68,18 @@ int main(int argc, const char** argv)
 
     // advance simulation on perturbed data
     mj_step(m, d);
-    x_t x_next; x_next << q, qvel;
-    u_t u_next; u_next << ctrl;
+    x_t xNext; xNext << q, qvel;
+    u_t uNext; uNext << ctrl;
 
     // compare
-    x_t xNext = *(lqr->A) * (x - x_star) + *(lqr->B) * (u - u_star) + x_star_next;
-    std::cout << (xNext - x_next).transpose() << '\n';
-    std::cout << "==================" << '\n';
-    std::cout << (x_next - x_star_next).transpose() << '\n';
-    std::cout << "==================" << '\n';
+    x_t xNextPrediction = *(ld->A) * (x - x_star) + *(ld->B) * (u - u_star) + xStarNext;
+    std::cout << "xNextPrediction - xNext:" << '\n';
+    std::cout << (xNextPrediction - xNext).transpose() << '\n';
+    std::cout << "--------------------" << '\n';
+    std::cout << "xNext - xStarNext:" << '\n';
+    std::cout << (xNext - xStarNext).transpose() << '\n';
+    std::cout << "--------------------" << '\n';
+    std::cout << "xNext:" << '\n';
     std::cout << xNext.transpose() << '\n';
 
 }
