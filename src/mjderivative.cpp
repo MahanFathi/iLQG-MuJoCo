@@ -26,14 +26,27 @@
 
 
 // gloval variables: internal
-const int MAXTHREAD = 8;   // maximum number of threads allowed
+const int MAXTHREAD = 16;   // maximum number of threads allowed
 
 
 // global variables: user-defined, with defaults
-int nthread = 0;            // number of parallel threads (default set later)
-int niter = 30;             // fixed number of solver iterations for finite-differencing
-int nwarmup = 3;            // center point repetitions to improve warmstart
-double eps = 1e-6;          // finite-difference epsilon
+static int nthread = 4;            // number of parallel threads (default set later)
+static int niter = 30;             // fixed number of solver iterations for finite-differencing
+static int nwarmup = 3;            // center point repetitions to improve warmstart
+static double eps = 1e-6;          // finite-difference epsilon
+
+
+void cpMjData(const mjModel* m, mjData* d_dest, const mjData* d_src)
+{
+    d_dest->time = d_src->time;
+    mju_copy(d_dest->qpos, d_src->qpos, m->nq);
+    mju_copy(d_dest->qvel, d_src->qvel, m->nv);
+    mju_copy(d_dest->qacc, d_src->qacc, m->nv);
+    mju_copy(d_dest->qacc_warmstart, d_src->qacc_warmstart, m->nv);
+    mju_copy(d_dest->qfrc_applied, d_src->qfrc_applied, m->nv);
+    mju_copy(d_dest->xfrc_applied, d_src->xfrc_applied, 6*m->nbody);
+    mju_copy(d_dest->ctrl, d_src->ctrl, m->nu);
+}
 
 
 // worker function for parallel finite-difference computation of derivatives
@@ -55,14 +68,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
     int iend = mjMIN(istart + chunk, nv);
 
     // copy state and control from dmain to thread-specific d
-    d->time = dmain->time;
-    mju_copy(d->qpos, dmain->qpos, m->nq);
-    mju_copy(d->qvel, dmain->qvel, m->nv);
-    mju_copy(d->qacc, dmain->qacc, m->nv);
-    mju_copy(d->qacc_warmstart, dmain->qacc_warmstart, m->nv);
-    mju_copy(d->qfrc_applied, dmain->qfrc_applied, m->nv);
-    mju_copy(d->xfrc_applied, dmain->xfrc_applied, 6*m->nbody);
-    mju_copy(d->ctrl, dmain->ctrl, m->nu);
+    cpMjData(m, d, dmain);
 
     // run full computation at center point (usually faster than copying dmain)
     mj_forward(m, d);

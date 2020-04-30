@@ -27,6 +27,7 @@ LQR::LQR(mjModel* m, mjData* d):
 void LQR::updateDerivatives()
 {
     calcMJDerivatives(m, d, deriv);
+
     (*A).block<nv, nv>(nv, 0) = (*dqaccdq) * m->opt.timestep;
     (*A).block<nv, nv>(nv, nv).setIdentity();
     (*A).block<nv, nv>(nv, nv) += (*dqaccdqvel) * m->opt.timestep;

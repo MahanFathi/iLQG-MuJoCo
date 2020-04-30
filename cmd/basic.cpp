@@ -17,6 +17,7 @@
 #include <GLFW/glfw3.h>
 
 #include "lqr.h"
+#include "mjderivative.h"
 #include "update.h"
 
 // MuJoCo data structures
@@ -149,29 +150,6 @@ int main(int argc, const char** argv)
     glfwSetCursorPosCallback(window, mouseMove);
     glfwSetMouseButtonCallback(window, mouseButton);
     glfwSetScrollCallback(window, scroll);
-
-    for (auto i = 0; i < 500; i++)
-        mj_step(m, d);
-
-    LQR* lqr = new LQR(m, d);
-    std::cout << *(lqr->A) << '\n';
-    lqr->updateDerivatives();
-    Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> q(d->qpos);
-    Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> qvel(d->qvel);
-    Eigen::Map<Eigen::Matrix<mjtNum, nu, 1>> qctrl(d->ctrl);
-    x_t x;
-    u_t u;
-    x << q, qvel;
-    u << qctrl;
-    x_t xNext = *(lqr->A) * x + *(lqr->B) * u;
-    lqr->updateDerivatives();
-    std::cout << xNext << '\n';
-    std::cout << "==============" << '\n';
-    mj_step(m, d);
-    x << q, qvel;
-    std::cout << x << '\n';
-    std::cout << "==============" << '\n';
-    std::cout << xNext - x << '\n';
 
     // run main loop, target real-time simulation and 60 fps rendering
     while( !glfwWindowShouldClose(window) )

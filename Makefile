@@ -2,6 +2,7 @@ BIN=main
 
 BIN_DIR=bin
 CMD_DIR=cmd
+TST_DIR=tst
 SRC_DIR=src
 INC_DIR=inc
 OBJ_DIR=obj
@@ -27,6 +28,9 @@ OBJS=$(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(SRCS))) $(BIN_DIR)
 
 basic: prebuild
 	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/base $(SRCS) $(CMD_DIR)/basic.cpp
+
+tests: prebuild
+	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/test_derivatives $(SRCS) $(TST_DIR)/test_derivatives.cpp
 
 $(OBJ_DIR)/%.o: %.cpp
 	$(CC) -c -g $(CFLAGS) -o $@ $<
