@@ -11,8 +11,6 @@ MJKEY=~/.mujoco/mjkey.txt
 MUJOCO_PATH=/home/mahan/.mujoco/mujoco200_linux
 MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/bin
 
-OUT_DIR=$(OBJ_DIR)/$(SRC_DIR)
-
 CC=clang++
 CFLAGS=-I. -I$(INC_DIR)/ $(MJ_FLAGS) -std=c++17 -O3 -pthread -mavx -Wl,-rpath,'$$ORIGIN'
 
@@ -20,19 +18,21 @@ LIBS=-lpthread -fopenmp
 LIBS_GL=-lmujoco200 -lGLEW -lGLU -lGL -lglfw
 LIBS_NOGL=-lmujoco200nogl
 
-SRCS=$(wildcard $(SRC_DIR)/*.c*)
-OBJS=$(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(SRCS))) $(BIN_DIR)
+SRCS=$(wildcard $(SRC_DIR)/*.c*) $(wildcard $(SRC_DIR)/*/*.c*)
+OBJS=$(addprefix $(OBJ_DIR)/, $(patsubst $(SRC_DIR)/%.cpp, %.o, $(SRCS)))
+
+OUT_DIR=$(sort $(dir $(OBJS)))
 
 
 .PHONY: prebuild clean
 
-basic: prebuild
+basic: prebuild $(OUT_DIR) $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/base $(SRCS) $(CMD_DIR)/basic.cpp
 
-tests: prebuild
+tests: prebuild $(OUT_DIR) $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/test_derivatives $(SRCS) $(TST_DIR)/test_derivatives.cpp
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) -c -g $(CFLAGS) -o $@ $<
 
 $(OUT_DIR):
