@@ -21,22 +21,22 @@ LIBS_NOGL=-lmujoco200nogl
 SRCS=$(wildcard $(SRC_DIR)/*.c*) $(wildcard $(SRC_DIR)/*/*.c*)
 OBJS=$(addprefix $(OBJ_DIR)/, $(patsubst $(SRC_DIR)/%.cpp, %.o, $(SRCS)))
 
-OUT_DIR=$(sort $(dir $(OBJS)))
+OUT_DIRS=$(sort $(dir $(OBJS)))
 
 
 .PHONY: prebuild clean
 
-basic: prebuild $(OUT_DIR) $(OBJS)
+basic: prebuild $(OUT_DIRS) $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/base $(SRCS) $(CMD_DIR)/basic.cpp
 
-tests: prebuild $(OUT_DIR) $(OBJS)
+tests: prebuild $(OUT_DIRS) $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $(LIBS_GL) -o $(BIN_DIR)/test_derivatives $(SRCS) $(TST_DIR)/test_derivatives.cpp
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) -c -g $(CFLAGS) -o $@ $<
 
-$(OUT_DIR):
-	mkdir -p $(OUT_DIR)
+$(OUT_DIRS):
+	mkdir -p $(OUT_DIRS)
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR) mjkey.txt
