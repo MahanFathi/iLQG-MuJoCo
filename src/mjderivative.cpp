@@ -4,6 +4,8 @@
 
 #include "mujoco.h"
 
+#include "mjderivative.h"
+
 
 // enable compilation with and without OpenMP support
 #if defined(_OPENMP)
@@ -50,7 +52,7 @@ void cpMjData(const mjModel* m, mjData* d_dest, const mjData* d_src)
 
 
 // worker function for parallel finite-difference computation of derivatives
-void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* deriv)
+void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* deriv, stepCostFn_t stepCostFn)
 {
     int nv = m->nv;
     int nu = m->nu;
@@ -79,6 +81,8 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
 
     // set output forward dynamics
     mjtNum* output = d->qacc;
+    mjtNum costPlus;
+    mjtNum costMinus;
 
     // save output for center point and warmstart (needed in forward only)
     mju_copy(warmstart, d->qacc_warmstart, nv);
@@ -93,6 +97,9 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         // perturb selected target +
         d->ctrl[i] += eps;
 
+        // evaluate cost +
+        costPlus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_VEL, 1);
@@ -103,12 +110,18 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         // perturb selected target -
         d->ctrl[i] = dmain->ctrl[i] - eps;
 
+        // evaluate cost -
+        costMinus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_VEL, 1);
 
         // undo perturbation
         d->ctrl[i] = dmain->ctrl[i];
+
+        // cost derivative
+        deriv[2*nv*nv + nv*nu + 2*nv + i] = (costPlus - costMinus)/(2*eps);
 
         // compute column i of derivative 2
         for( int j=0; j<nv; j++ )
@@ -121,6 +134,9 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         // perturb velocity +
         d->qvel[i] += eps;
 
+        // evaluate cost +
+        costPlus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_POS, 1);
@@ -131,12 +147,18 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         // perturb velocity -
         d->qvel[i] = dmain->qvel[i] - eps;
 
+        // evaluate cost -
+        costMinus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_POS, 1);
 
         // undo perturbation
         d->qvel[i] = dmain->qvel[i];
+
+        // cost derivative
+        deriv[2*nv*nv + nv*nu + nv + i] = (costPlus - costMinus)/(2*eps);
 
         // compute column i of derivative 1
         for( int j=0; j<nv; j++ )
@@ -172,6 +194,9 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         else
             d->qpos[m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]] += eps;
 
+        // evaluate cost +
+        costPlus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_NONE, 1);
@@ -192,12 +217,18 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         else
             d->qpos[m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]] -= eps;
 
+        // evaluate cost -
+        costMinus = stepCostFn(d);
+
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_NONE, 1);
 
         // undo perturbation
         mju_copy(d->qpos, dmain->qpos, m->nq);
+
+        // cost derivative
+        deriv[2*nv*nv + nv*nu + i] = (costPlus - costMinus)/(2*eps);
 
         // compute column i of derivative 0
         for( int j=0; j<nv; j++ )
@@ -208,7 +239,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
 }
 
 
-void calcMJDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv)
+void calcMJDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv, stepCostFn_t stepCostFn)
 {
 
     // deriv: dacc/dpos, dacc/dvel, dacc/dctrl
@@ -243,7 +274,7 @@ void calcMJDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv)
     // run worker threads in parallel if OpenMP is enabled
     #pragma omp parallel for schedule(static)
     for( int n=0; n<nthread; n++ )
-        worker(m, dmain, d[n], n, deriv);
+        worker(m, dmain, d[n], n, deriv, stepCostFn);
 
     for( int n=0; n<nthread; n++ )
         mj_deleteData(d[n]);

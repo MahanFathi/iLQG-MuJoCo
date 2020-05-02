@@ -6,16 +6,24 @@
 #include <eigen3/Eigen/Core>
 #include "mujoco.h"
 
-#include "linear_dynamics.h"
+#include "differentiator.h"
 #include "mjderivative.h"
 #include "update.h"
+
+
+// dummy stepCost function
+mjtNum stepCost(mjData* d)
+{
+    mjtNum cost = d->qpos[0];
+    return cost;
+}
 
 
 int main(int argc, const char** argv)
 {
 
-    using x_t = LinearDynamics<6, 3>::x_t;
-    using u_t = LinearDynamics<6, 3>::u_t;
+    using x_t = Differentiator<6, 3>::x_t;
+    using u_t = Differentiator<6, 3>::u_t;
 
     // activate mujoco
     mj_activate("mjkey.txt");
@@ -42,8 +50,9 @@ int main(int argc, const char** argv)
     u_t u_star; u_star << ctrlStar;
 
     // linearize around set state and contorl
-    LinearDynamics<6, 3>* ld = new LinearDynamics<6, 3>(m, dStar);
-    ld->updateDerivatives();
+    stepCostFn_t stepCostFn = stepCost;
+    Differentiator<6, 3>* differentiator = new Differentiator<6, 3>(m, dStar, stepCostFn);
+    differentiator->updateDerivatives();
 
     // copy data to d_prime
     mjData* d = mj_makeData(m);
@@ -72,7 +81,7 @@ int main(int argc, const char** argv)
     u_t uNext; uNext << ctrl;
 
     // compare
-    x_t xNextPrediction = *(ld->A) * (x - x_star) + *(ld->B) * (u - u_star) + xStarNext;
+    x_t xNextPrediction = *(differentiator->A) * (x - x_star) + *(differentiator->B) * (u - u_star) + xStarNext;
     std::cout << "xNextPrediction - xNext:" << '\n';
     std::cout << (xNextPrediction - xNext).transpose() << '\n';
     std::cout << "--------------------" << '\n';
