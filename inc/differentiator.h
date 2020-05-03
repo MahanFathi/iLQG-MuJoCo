@@ -69,6 +69,17 @@ public:
         (*B).setZero();
     }
 
+    void setMJData(mjData* dStar)
+    {
+        d = dStar;
+
+        // using 'placement new' syntax to only chage the
+        // memory address for map instead of reallocation
+        new (x) x_mt(d->qpos);  // note that qpos and qvel are contiguous in memory
+        new (u) u_mt(d->ctrl);
+
+    }
+
     void updateDerivatives() // derivatives are taken at d
     {
         calcMJDerivatives(m, d, deriv, stepCostFn);

@@ -9,6 +9,7 @@
 #include "differentiator.h"
 #include "mjderivative.h"
 #include "update.h"
+#include "util.h"
 
 
 // dummy stepCost function

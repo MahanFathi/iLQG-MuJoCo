@@ -5,6 +5,7 @@
 #include "mujoco.h"
 
 #include "mjderivative.h"
+#include "util.h"
 
 
 // enable compilation with and without OpenMP support
@@ -36,19 +37,6 @@ static int nthread = 4;            // number of parallel threads (default set la
 static int niter = 30;             // fixed number of solver iterations for finite-differencing
 static int nwarmup = 3;            // center point repetitions to improve warmstart
 static double eps = 1e-6;          // finite-difference epsilon
-
-
-void cpMjData(const mjModel* m, mjData* d_dest, const mjData* d_src)
-{
-    d_dest->time = d_src->time;
-    mju_copy(d_dest->qpos, d_src->qpos, m->nq);
-    mju_copy(d_dest->qvel, d_src->qvel, m->nv);
-    mju_copy(d_dest->qacc, d_src->qacc, m->nv);
-    mju_copy(d_dest->qacc_warmstart, d_src->qacc_warmstart, m->nv);
-    mju_copy(d_dest->qfrc_applied, d_src->qfrc_applied, m->nv);
-    mju_copy(d_dest->xfrc_applied, d_src->xfrc_applied, 6*m->nbody);
-    mju_copy(d_dest->ctrl, d_src->ctrl, m->nu);
-}
 
 
 // worker function for parallel finite-difference computation of derivatives
@@ -246,7 +234,7 @@ void calcMJDerivatives(mjModel* m, mjData* dmain, mjtNum* deriv, stepCostFn_t st
     // default nthread = number of logical cores (usually optimal)
     nthread = omp_get_num_procs();
 
-    // make mjData: per-thread
+    // make mjData: per-thread TODO: make somehow static
     mjData* d[MAXTHREAD];
     for( int n=0; n<nthread; n++ )
         d[n] = mj_makeData(m);
