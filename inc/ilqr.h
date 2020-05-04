@@ -2,6 +2,7 @@
 
 
 #include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
 #include "mujoco.h"
 
 #include "differentiator.h"
@@ -38,7 +39,7 @@ public:
     /*      Data     */
     // MuJoCo model and data
     mjModel* m;
-    mjData* d;
+    mjData* d = NULL;
 
     // of course the differentiator
     Differentiator<nv, nu>* differentiator;
@@ -53,14 +54,20 @@ public:
     // vectors mapped to (qpos, qvel) and ctrl
     x_mt* x;
     u_mt* u;
+    x_mt* xStar;
+    u_mt* uStar;
 
 
     /*      Funcs    */
-    ILQR(mjModel* m, mjData* d, stepCostFn_t &stepCostFn):
-        m(m), d(d)
+    ILQR(mjModel* m, mjData* dmain, stepCostFn_t &stepCostFn):
+        m(m)
     {
+        // set up d
+        d = mj_makeData(m);
+        setDInit(dmain);
+
         // set up differentiator
-        differentiator = new Differentiator<nv, nu>(m, d);
+        differentiator = new Differentiator<nv, nu>(m, d, stepCostFn);
 
         // initialize trajectory:
         //      dmain is just the initial state
@@ -75,6 +82,8 @@ public:
         // bind x and u vectors to u
         x = new x_mt(d->qpos);   // note that qpos and qvel are contiguous in memory
         u = new u_mt(d->ctrl);
+        xStar = new x_mt(d->qpos);   // note that qpos and qvel are contiguous in memory
+        uStar = new u_mt(d->ctrl);
     }
 
 
@@ -85,21 +94,23 @@ public:
     }
 
 
+    void setDInit(mjData* dInit)
+    {
+        cpMjData(m, d, dInit);
+    }
+
+
     void forwardPass()
     {   // apply control policies in K and k
 
-        // set init state
-        cpMjData(m, d, dArray[N]);
-
-        x_mt xStar;
-        u_mt uStar;
+        // NOTE: (important) mjData* d, should be set to target initial state before *each* forwardPass()
 
         for (int n = N; n >= 0; n--)
         {
             // bind xStar to reference point
-            new (&xStar) x_mt(dArray[n]->qpos);
-            new (&uStar) u_mt(dArray[n]->ctrl);
-            (*u).noalias() = K[n] * (*x - xStar) + k[n] + uStar;
+            new (xStar) x_mt(dArray[n]->qpos);
+            new (uStar) u_mt(dArray[n]->ctrl);
+            (*u).noalias() = K[n] * (*x - *xStar) + k[n] + *uStar;
             cpMjData(m, dArray[n], d);
             mj_step(m, d);
         }   // since K/k[0] are shit, for dArray[0] only the state is valid
@@ -112,8 +123,8 @@ public:
         Q_t Q; R_t R; x_t c;
         static A_t &A = *(differentiator->A);
         static B_t &B = *(differentiator->B);
-        static x_t &q = *(differentiator->dgdx);
-        static u_t &r = *(differentiator->dgdu);
+        static x_mt &q = *(differentiator->dgdx);
+        static u_mt &r = *(differentiator->dgdu);
 
         initV();
 
@@ -137,13 +148,23 @@ public:
 
             // claculate K & k
             Eigen::ColPivHouseholderQR<R_t> temp = (-2*B.transpose()*(*V)*B+2*R).colPivHouseholderQr();
-            K[n] = temp.solve(2*B.transpose()*(*V)*A);
-            k[n] = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c));
+            K[n].noalias() = temp.solve(2*B.transpose()*(*V)*A);
+            k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c));
 
             // calculate V & v
             *V = (A+B*K[n]).transpose()*(*V)*(A+B*K[n])+Q+K[n].transpose()*R*K[n];
             *v = 2*(k[n].transpose()*B.transpose()+c.transpose())*(*V)*(A+B*K[n])+(*v)*(A+B*K[n])+q+2*k[n]*R*K[n];
         }
+    }
+
+
+    void iterate()
+    {
+        // forward to get [(x*, u*), ...]
+        setDInit(dArray[N]);
+        forwardPass();
+        // backward to get [(K, k), ...]
+        backwardPass();
     }
 
 };

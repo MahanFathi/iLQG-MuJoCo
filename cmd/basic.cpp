@@ -19,6 +19,8 @@
 #include "mjderivative.h"
 #include "update.h"
 
+#include "inverted_pendulum/inverted_pendulum.h"
+
 // MuJoCo data structures
 mjModel* m = NULL;                  // MuJoCo model
 mjData* d = NULL;                   // MuJoCo data
@@ -150,6 +152,8 @@ int main(int argc, const char** argv)
     glfwSetMouseButtonCallback(window, mouseButton);
     glfwSetScrollCallback(window, scroll);
 
+    InvertedPendulum invertedPendulum(m, d);
+
     // run main loop, target real-time simulation and 60 fps rendering
     while( !glfwWindowShouldClose(window) )
     {
@@ -157,7 +161,7 @@ int main(int argc, const char** argv)
         //  Assuming MuJoCo can simulate faster than real-time, which it usually can,
         //  this loop will finish on time for the next frame to be rendered at 60 fps.
         //  Otherwise add a cpu timer and exit this loop when it is time to render.
-        forwardFrame(m, d);
+        invertedPendulum.forward();
 
         // get framebuffer viewport
         mjrRect viewport = {0, 0, 0, 0};
