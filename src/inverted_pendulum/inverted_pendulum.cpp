@@ -7,10 +7,13 @@ InvertedPendulum::InvertedPendulum(mjModel* m, mjData* d):
     m(m), d(d)
 {
     // cost function
-    stepCostFn_t stepCostFn = stepCost;
+    stepCostFn = stepCost;
+
+    for (auto i = 0; i < 10; i++)
+        mj_step(m, d);
 
     // setup iLQR
-    iLQR = new ILQR<2, 1, 100>(m, d, stepCostFn);
+    iLQR = new ILQR<nv, nu, N>(m, d, stepCostFn);
 }
 
 void InvertedPendulum::forward()

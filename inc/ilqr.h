@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include "mujoco.h"
 
+#include "mjderivative.h"
 #include "differentiator.h"
 #include "util.h"
 
@@ -27,6 +27,8 @@ public:
     typedef Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> ctrl_mt;
     typedef Eigen::Map<Eigen::Matrix<mjtNum, 2*nv, 1>> x_mt;
     typedef Eigen::Map<Eigen::Matrix<mjtNum, nu, 1>> u_mt;
+    typedef Eigen::Map<Eigen::Matrix<mjtNum, 1, 2*nv>> q_mt;
+    typedef Eigen::Map<Eigen::Matrix<mjtNum, 1, nu>> r_mt;
     // typedefs specific to iLQR (redundancies are only for better traceability)
     typedef Eigen::Matrix<mjtNum, nu, 2*nv> K_t;
     typedef Eigen::Matrix<mjtNum, nu, 1> k_t;
@@ -34,7 +36,7 @@ public:
     typedef Eigen::Matrix<mjtNum, 1, 2*nv> v_t;
     typedef Eigen::Matrix<mjtNum, 2*nv, 2*nv> Q_t;
     typedef Eigen::Matrix<mjtNum, nu, nu> R_t;
-   
+
 
     /*      Data     */
     // MuJoCo model and data
@@ -84,6 +86,9 @@ public:
         u = new u_mt(d->ctrl);
         xStar = new x_mt(d->qpos);   // note that qpos and qvel are contiguous in memory
         uStar = new u_mt(d->ctrl);
+
+        V = new V_t;
+        v = new v_t;
     }
 
 
@@ -123,8 +128,8 @@ public:
         Q_t Q; R_t R; x_t c;
         static A_t &A = *(differentiator->A);
         static B_t &B = *(differentiator->B);
-        static x_mt &q = *(differentiator->dgdx);
-        static u_mt &r = *(differentiator->dgdu);
+        static q_mt &q = *(differentiator->dgdx);
+        static r_mt &r = *(differentiator->dgdu);
 
         initV();
 
@@ -138,8 +143,8 @@ public:
             differentiator->updateDerivatives();
 
             // approximate Hessians
-            Q = q * q.transpose();
-            R = r * r.transpose();
+            Q = q.transpose() * q;
+            R = r.transpose() * r;
 
             // get c, i.e. x_{n-1}^* - x_n^*
             x_mt xn1(dArray[n-1]->qpos);
@@ -153,7 +158,7 @@ public:
 
             // calculate V & v
             *V = (A+B*K[n]).transpose()*(*V)*(A+B*K[n])+Q+K[n].transpose()*R*K[n];
-            *v = 2*(k[n].transpose()*B.transpose()+c.transpose())*(*V)*(A+B*K[n])+(*v)*(A+B*K[n])+q.transpose()+2*k[n].transpose()*R*K[n];
+            *v = 2*(k[n].transpose()*B.transpose()+c.transpose())*(*V)*(A+B*K[n])+(*v)*(A+B*K[n])+q+2*k[n].transpose()*R*K[n];
         }
     }
 

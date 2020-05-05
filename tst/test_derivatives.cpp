@@ -13,7 +13,7 @@
 
 
 // dummy stepCost function
-mjtNum stepCost(mjData* d)
+inline mjtNum stepCost(mjData* d)
 {
     mjtNum cost = d->qpos[0];
     return cost;
@@ -23,15 +23,15 @@ mjtNum stepCost(mjData* d)
 int main(int argc, const char** argv)
 {
 
-    using x_t = Differentiator<6, 3>::x_t;
-    using u_t = Differentiator<6, 3>::u_t;
+    using x_t = Differentiator<2, 1>::x_t;
+    using u_t = Differentiator<2, 1>::u_t;
 
     // activate mujoco
     mj_activate("mjkey.txt");
 
     // create model and data
     char error[1000] = "Could not load binary model";
-    mjModel* m = mj_loadXML("./res/hopper.xml", 0, error, 1000);
+    mjModel* m = mj_loadXML("./res/inverted_pendulum.xml", 0, error, 1000);
     mjData* dStar = mj_makeData(m);
 
     // advance simulation
@@ -52,7 +52,7 @@ int main(int argc, const char** argv)
 
     // linearize around set state and contorl
     stepCostFn_t stepCostFn = stepCost;
-    Differentiator<6, 3>* differentiator = new Differentiator<6, 3>(m, dStar, stepCostFn);
+    Differentiator<2, 1>* differentiator = new Differentiator<2, 1>(m, dStar, stepCostFn);
     differentiator->updateDerivatives();
 
     // copy data to d_prime

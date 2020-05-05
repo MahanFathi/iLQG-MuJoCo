@@ -24,6 +24,8 @@ public:
     typedef Eigen::Map<Eigen::Matrix<mjtNum, nv, 1>> ctrl_mt;
     typedef Eigen::Map<Eigen::Matrix<mjtNum, 2*nv, 1>> x_mt;
     typedef Eigen::Map<Eigen::Matrix<mjtNum, nu, 1>> u_mt;
+    typedef Eigen::Map<Eigen::Matrix<mjtNum, 1, 2*nv>> q_mt;
+    typedef Eigen::Map<Eigen::Matrix<mjtNum, 1, nu>> r_mt;
 
     /*      Data     */
     // MuJoCo model and data
@@ -37,8 +39,8 @@ public:
     dqdu_mt* dqaccdctrl;
     // step cost function and derivatives
     stepCostFn_t &stepCostFn;
-    x_mt* dgdx;
-    u_mt* dgdu;
+    q_mt* dgdx;
+    r_mt* dgdu;
     // vectors mapped to (qpos, qvel) and ctrl
     x_mt* x;
     u_mt* u;
@@ -55,8 +57,8 @@ public:
         dqaccdq = new dqdq_mt(deriv);
         dqaccdqvel = new dqdq_mt(deriv + nv*nv);
         dqaccdctrl = new dqdu_mt(deriv + 2*nv*nv);
-        dgdx = new x_mt(deriv + 2*nv*nv+nv*nu);
-        dgdu = new u_mt(deriv + 2*nv*nv+nv*nu+2*nv);
+        dgdx = new q_mt(deriv + 2*nv*nv+nv*nu);
+        dgdu = new r_mt(deriv + 2*nv*nv+nv*nu+2*nv);
         x = new x_mt(d->qpos);   // note that qpos and qvel are contiguous in memory
         u = new u_mt(d->ctrl);
 
