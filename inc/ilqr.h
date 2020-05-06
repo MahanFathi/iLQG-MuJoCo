@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include "mujoco.h"
@@ -135,6 +137,9 @@ public:
 
         for (int n = 1; n <= N; n++)
         {
+            std::cout << "n: \t" << n << '\n';
+            std::cout << "----------" << '\n';
+
             // symmetric V
             (*V) = (*V + (*V).transpose().eval()).array() / 2;
 
@@ -146,13 +151,16 @@ public:
             Q = q.transpose() * q;
             R = r.transpose() * r;
 
+            // R.diagonal().array() += 100000.0;
+            (*V).diagonal().array() += 100000.0;
+
             // get c, i.e. x_{n-1}^* - x_n^*
             x_mt xn1(dArray[n-1]->qpos);
             x_mt xn(dArray[n]->qpos);
             c = xn1 - xn;
 
             // claculate K & k
-            auto temp = (-2*B.transpose()*(*V)*B+2*R).ldlt();
+            auto temp = (-2*B.transpose()*(*V)*B-2*R).ldlt();
             K[n].noalias() = temp.solve(2*B.transpose()*(*V)*A);
             k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c));
 

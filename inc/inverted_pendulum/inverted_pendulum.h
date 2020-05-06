@@ -19,9 +19,9 @@ public:
     // specific env settings
     static inline constexpr int nv = 2;
     static inline constexpr int nu = 1;
-    static inline constexpr int N = 2;
+    static inline constexpr int N = 40;
 
-    static inline constexpr int maxIterUtilConvergence = 10;
+    static inline constexpr int maxIterUtilConvergence = 20;
 
     // iterative LQR class
     ILQR<nv, nu, N>* iLQR;
