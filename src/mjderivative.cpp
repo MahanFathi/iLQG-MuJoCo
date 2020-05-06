@@ -69,8 +69,7 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
 
     // set output forward dynamics
     mjtNum* output = d->qacc;
-    mjtNum costPlus;
-    mjtNum costMinus;
+    mjtNum costCenter = stepCostFn(dmain);
 
     // save output for center point and warmstart (needed in forward only)
     mju_copy(warmstart, d->qacc_warmstart, nv);
@@ -83,10 +82,10 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
             break;
 
         // perturb selected target +
-        d->ctrl[i] += eps;
+        d->ctrl[i] = dmain->ctrl[i] + eps;
 
-        // evaluate cost +
-        costPlus = stepCostFn(d);
+        // get cost for perturbation
+        deriv[2*nv*nv + nv*nu + 2*nv + i] = (stepCostFn(d) - costCenter)/eps;
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -96,34 +95,29 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         mju_copy(temp, output, nv);
 
         // perturb selected target -
+        cpMjData(m, d, dmain);
         d->ctrl[i] = dmain->ctrl[i] - eps;
-
-        // evaluate cost -
-        costMinus = stepCostFn(d);
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_VEL, 1);
 
-        // undo perturbation
-        d->ctrl[i] = dmain->ctrl[i];
-
-        // cost derivative
-        deriv[2*nv*nv + nv*nu + 2*nv + i] = (costPlus - costMinus)/(2*eps);
-
         // compute column i of derivative 2
         for( int j=0; j<nv; j++ )
             deriv[2*nv*nv + i + j*nu] = (temp[j] - output[j])/(2*eps);
+
+        // undo perturbation
+        cpMjData(m, d, dmain);
     }
 
     // finite-difference over velocity: skip = mjSTAGE_POS
     for( int i=istart; i<iend; i++ )
     {
         // perturb velocity +
-        d->qvel[i] += eps;
+        d->qvel[i] = dmain->qvel[i] + eps;
 
-        // evaluate cost +
-        costPlus = stepCostFn(d);
+        // get cost for perturbation
+        deriv[2*nv*nv + nv*nu + nv + i] = (stepCostFn(d) - costCenter)/eps;
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -135,22 +129,16 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         // perturb velocity -
         d->qvel[i] = dmain->qvel[i] - eps;
 
-        // evaluate cost -
-        costMinus = stepCostFn(d);
-
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_POS, 1);
 
-        // undo perturbation
-        d->qvel[i] = dmain->qvel[i];
-
-        // cost derivative
-        deriv[2*nv*nv + nv*nu + nv + i] = (costPlus - costMinus)/(2*eps);
-
         // compute column i of derivative 1
         for( int j=0; j<nv; j++ )
             deriv[nv*nv + i + j*nv] = (temp[j] - output[j])/(2*eps);
+
+        // undo perturbation
+        cpMjData(m, d, dmain);
     }
 
     // finite-difference over position: skip = mjSTAGE_NONE
@@ -182,8 +170,8 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         else
             d->qpos[m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]] += eps;
 
-        // evaluate cost +
-        costPlus = stepCostFn(d);
+        // get cost for perturbation
+        deriv[2*nv*nv + nv*nu + i] = (stepCostFn(d) - costCenter)/eps;
 
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
@@ -205,22 +193,16 @@ void worker(const mjModel* m, const mjData* dmain, mjData* d, int id, mjtNum* de
         else
             d->qpos[m->jnt_qposadr[jid] + i - m->jnt_dofadr[jid]] -= eps;
 
-        // evaluate cost -
-        costMinus = stepCostFn(d);
-
         // evaluate dynamics, with center warmstart
         mju_copy(d->qacc_warmstart, warmstart, m->nv);
         mj_forwardSkip(m, d, mjSTAGE_NONE, 1);
 
-        // undo perturbation
-        mju_copy(d->qpos, dmain->qpos, m->nq);
-
-        // cost derivative
-        deriv[2*nv*nv + nv*nu + i] = (costPlus - costMinus)/(2*eps);
-
         // compute column i of derivative 0
         for( int j=0; j<nv; j++ )
             deriv[i + j*nv] = (temp[j] - output[j])/(2*eps);
+
+        // undo perturbation
+        cpMjData(m, d, dmain);
     }
 
     mjFREESTACK

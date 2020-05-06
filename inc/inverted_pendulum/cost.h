@@ -4,7 +4,7 @@
 #include "mujoco.h"
 
 
-inline mjtNum stepCost(mjData* d)
+inline mjtNum stepCost(const mjData* d)
 {
     mjtNum cost;
     cost =

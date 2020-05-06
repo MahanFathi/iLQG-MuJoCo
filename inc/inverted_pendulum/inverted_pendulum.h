@@ -19,7 +19,7 @@ public:
     // specific env settings
     static inline constexpr int nv = 2;
     static inline constexpr int nu = 1;
-    static inline constexpr int N = 5;
+    static inline constexpr int N = 2;
 
     static inline constexpr int maxIterUtilConvergence = 10;
 
