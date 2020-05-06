@@ -94,7 +94,7 @@ public:
 
     virtual void initV()
     {
-        (*V).setZero();
+        (*V).setIdentity();
         (*v).setZero();
     }
 
@@ -152,7 +152,7 @@ public:
             c = xn1 - xn;
 
             // claculate K & k
-            Eigen::ColPivHouseholderQR<R_t> temp = (-2*B.transpose()*(*V)*B+2*R).colPivHouseholderQr();
+            auto temp = (-2*B.transpose()*(*V)*B+2*R).ldlt();
             K[n].noalias() = temp.solve(2*B.transpose()*(*V)*A);
             k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c));
 
