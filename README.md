@@ -1,5 +1,5 @@
 # iLQG-MuJoCo
-Iterative LQG for a couple of MuJoCo models
+Iterative LQG for a couple of MuJoCo models. Find a write-up [HERE](https://mahanfathi.github.io/blog/ilqr/index.html).
 
 ### Demo for _Inverted Pendulum_ and _Hopper_
 A few iterations before convergence is shown here. Hopper in particular does some crazy stuff, but it will get there (no wonder why evolution wiped out these guys). This whole process below is considered as a signle MPC run. You can set contact solref[0] to a slightly higher number in the model, for more smooth dynamics and hence better derivative behaviors. 
