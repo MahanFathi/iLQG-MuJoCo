@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include "mujoco.h"
@@ -61,8 +59,11 @@ public:
     x_mt* xStar;
     u_mt* uStar;
 
-    // Levenberg-Marquardt parameter
+    // Levenberg-Marquardt parameters
+    mjtNum muMin = 1e-6;
+    mjtNum delta0 =  2.0;
     mjtNum mu = 1000.0;
+    mjtNum delta;
 
 
     /*      Funcs    */
@@ -130,7 +131,7 @@ public:
     }
 
 
-    void backwardPass()
+    bool backwardPass()
     {   // calculate K and k
 
         Q_t Q; R_t R; x_t c;
@@ -143,9 +144,6 @@ public:
 
         for (int n = 1; n <= N; n++)
         {
-            std::cout << "n: \t" << n << '\n';
-            std::cout << "----------" << '\n';
-
             // symmetric V
             (*V) = (*V + (*V).transpose().eval()).array() / 2;
 
@@ -162,17 +160,22 @@ public:
             x_mt xn(dArray[n]->qpos);
             c = xn1 - xn;
 
-            // claculate K & k
+            // create inverse matrix
             (*V).diagonal().array() += mu;
-            auto temp = (-2*B.transpose()*(*V)*B - 2*R).ldlt();
+            Eigen::LDLT<Eigen::Matrix<mjtNum, nu, nu>> ldlt = (2*B.transpose()*(*V)*B + 2*R).ldlt();
+            if (!ldlt.isPositive())
+                return true;
             // (*V).diagonal().array() -= mu;
-            K[n].noalias() = temp.solve(2*B.transpose()*(*V)*A);
-            k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c)+r.transpose());
+
+            // claculate K & k
+            K[n].noalias() = ldlt.solve(-2*B.transpose()*(*V)*A);
+            k[n].noalias() = ldlt.solve(-B.transpose()*((*v).transpose()+2*(*V)*c)-r.transpose());
 
             // calculate V & v
             *V = (A+B*K[n]).transpose()*(*V)*(A+B*K[n])+Q+K[n].transpose()*R*K[n];
             *v = 2*(k[n].transpose()*B.transpose()+c.transpose())*(*V)*(A+B*K[n])+(*v)*(A+B*K[n])+q+2*k[n].transpose()*R*K[n];
         }
+        return false;
     }
 
 
@@ -182,7 +185,23 @@ public:
         forwardPass();
         setDInit(dArray[N]);
         // backward to get [(K, k), ...]
-        backwardPass();
+        while (backwardPass())
+            increaseMu();
+        // decreaseMu();
     }
 
+
+    void increaseMu()
+    {
+        delta = mjMAX(delta0, delta*delta0);
+        mu = mjMAX(muMin, mu*delta);
+    }
+    void decreaseMu()
+    {
+        delta = mjMIN(1.0/delta0, delta/delta0);
+        if (mu*delta > muMin)
+            mu = mjMAX(muMin, mu*delta);
+        if (mu*delta <= muMin)
+            mu = 0.0;
+    }
 };
