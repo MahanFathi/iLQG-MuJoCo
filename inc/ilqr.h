@@ -179,8 +179,8 @@ public:
     void iterate()
     {
         // forward to get [(x*, u*), ...]
-        setDInit(dArray[N]);
         forwardPass();
+        setDInit(dArray[N]);
         // backward to get [(K, k), ...]
         backwardPass();
     }
