@@ -61,6 +61,9 @@ public:
     x_mt* xStar;
     u_mt* uStar;
 
+    // Levenberg-Marquardt parameter
+    mjtNum mu = 1000.0;
+
 
     /*      Funcs    */
     ILQR(mjModel* m, mjData* dmain, stepCostFn_t &stepCostFn):
@@ -96,8 +99,11 @@ public:
 
     virtual void initV()
     {
-        (*V).setIdentity();
-        (*v).setZero();
+        differentiator->setMJData(dArray[0]);
+        differentiator->updateDerivatives();
+
+        *v = *(differentiator->dgdx);
+        (*V).noalias() = (*v).transpose()*(*v);
     }
 
 
@@ -151,18 +157,17 @@ public:
             Q = q.transpose() * q;
             R = r.transpose() * r;
 
-            // R.diagonal().array() += 100000.0;
-            (*V).diagonal().array() += 100000.0;
-
             // get c, i.e. x_{n-1}^* - x_n^*
             x_mt xn1(dArray[n-1]->qpos);
             x_mt xn(dArray[n]->qpos);
             c = xn1 - xn;
 
             // claculate K & k
-            auto temp = (-2*B.transpose()*(*V)*B-2*R).ldlt();
+            (*V).diagonal().array() += mu;
+            auto temp = (-2*B.transpose()*(*V)*B - 2*R).ldlt();
+            // (*V).diagonal().array() -= mu;
             K[n].noalias() = temp.solve(2*B.transpose()*(*V)*A);
-            k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c));
+            k[n].noalias() = temp.solve(B.transpose()*((*v).transpose()+2*(*V)*c)+r.transpose());
 
             // calculate V & v
             *V = (A+B*K[n]).transpose()*(*V)*(A+B*K[n])+Q+K[n].transpose()*R*K[n];
