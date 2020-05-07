@@ -24,6 +24,9 @@ A few iterations before convergence is shown here. Hopper in particular does som
 ### Usage 
 `mjpro151` is also included in this repo. You just have to copy your `mjkey.txt` in the `bin` folder. Make excecutables with `make` at `./MakeFile` and run with `./bin/main (some number for init)`. As I'm using fixed-size eigen matrices in `./include/types.h`, you need to modify this according to your model, and build again.   
 
+Modify the `Makefile` by specifying `MJKEY` and `MUJOCO_PATH`, make the executables with `make`, 
+and run with `./bin/base ./res/inverted_pendulum.xml`.
+
 ### TODOs
 - Make it faster of course 
 - Extend to walking robots 
