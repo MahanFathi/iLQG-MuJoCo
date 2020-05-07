@@ -9,7 +9,7 @@ InvertedPendulum::InvertedPendulum(mjModel* m, mjData* d):
     // cost function
     stepCostFn = stepCost;
 
-    for (auto i = 0; i < 10; i++)
+    for (auto i = 0; i < 50; i++)
         mj_step(m, d);
 
     // setup iLQR

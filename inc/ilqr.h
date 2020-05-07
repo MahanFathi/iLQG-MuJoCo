@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include "mujoco.h"
@@ -48,6 +50,7 @@ public:
 
     // intermediate state/ctrl storage
     mjData* dArray[N+1];     // d[N]: init state,    d[0]: landing state
+    mjData* dArrayBuffer[N+1];     // d[N]: init state,    d[0]: landing state
 
     // to store data when solving in backward pass
     V_t* V; v_t* v;
@@ -59,16 +62,23 @@ public:
     x_mt* xStar;
     u_mt* uStar;
 
+    // store step cost function
+    stepCostFn_t stepCostFn;
+
     // Levenberg-Marquardt parameters
     mjtNum muMin = 1e-6;
     mjtNum delta0 =  2.0;
     mjtNum mu = 1000.0;
     mjtNum delta;
 
+    // line search
+    mjtNum alpha = 1.0;
+    mjtNum alphaDecay = 0.8;
+
 
     /*      Funcs    */
     ILQR(mjModel* m, mjData* dmain, stepCostFn_t &stepCostFn):
-        m(m)
+        m(m), stepCostFn(stepCostFn)
     {
         // set up d
         d = mj_makeData(m);
@@ -83,6 +93,7 @@ public:
         for (int n = N; n >= 0; n--)
         {
             dArray[n] = mj_makeData(m);
+            dArrayBuffer[n] = mj_makeData(m);
             cpMjData(m, dArray[n], d);
             mj_step(m, d);
         }   // note that d is shit now
@@ -105,6 +116,7 @@ public:
 
         *v = *(differentiator->dgdx);
         (*V).noalias() = (*v).transpose()*(*v);
+        (*v).setZero();
     }
 
 
@@ -114,20 +126,40 @@ public:
     }
 
 
-    void forwardPass()
+    bool forwardPass()
     {   // apply control policies in K and k
 
         // NOTE: (important) mjData* d, should be set to target initial state before *each* forwardPass()
+
+        // keep track of total cost
+        initV();
+        mjtNum cost(0.0);
+        mjtNum costStar(0.0);
 
         for (int n = N; n >= 0; n--)
         {
             // bind xStar to reference point
             new (xStar) x_mt(dArray[n]->qpos);
             new (uStar) u_mt(dArray[n]->ctrl);
-            (*u).noalias() = K[n] * (*x - *xStar) + k[n] + *uStar;
-            cpMjData(m, dArray[n], d);
+            (*u).noalias() = K[n] * (*x - *xStar) + (alpha * k[n].array()).matrix() + *uStar;
+            costStar += stepCostFn(dArray[n]);
+            cost += stepCostFn(d);
+            if (n == 0)
+            {
+                costStar += ((*xStar).transpose() * (*V) * (*xStar))(0,0);
+                costStar += ((*v) * (*xStar))(0,0);
+                cost += ((*x).transpose() * (*V) * (*x))(0,0);
+                cost += ((*v) * (*x))(0,0);
+            }
+            cpMjData(m, dArrayBuffer[n], d);
             mj_step(m, d);
         }   // since K/k[0] are shit, for dArray[0] only the state is valid
+
+        bool success = (cost <= costStar);
+        if (success)
+            for (int n = N; n >= 0; n--)
+                cpMjData(m, dArray[n], dArrayBuffer[n]);
+        return !success;
     }
 
 
@@ -144,6 +176,9 @@ public:
 
         for (int n = 1; n <= N; n++)
         {
+            std::cout << "----------" << '\n';
+            std::cout << "n: \t" << n << '\n';
+
             // symmetric V
             (*V) = (*V + (*V).transpose().eval()).array() / 2;
 
@@ -163,9 +198,13 @@ public:
             // create inverse matrix
             (*V).diagonal().array() += mu;
             Eigen::LDLT<Eigen::Matrix<mjtNum, nu, nu>> ldlt = (2*B.transpose()*(*V)*B + 2*R).ldlt();
-            if (!ldlt.isPositive())
+            if (!ldlt.isPositive() && nu != 1)
+            {
+                std::cout << mu << '\n';
+                std::cout << (2*B.transpose()*(*V)*B + 2*R) << '\n';
                 return true;
-            // (*V).diagonal().array() -= mu;
+            }
+            (*V).diagonal().array() -= mu;
 
             // claculate K & k
             K[n].noalias() = ldlt.solve(-2*B.transpose()*(*V)*A);
@@ -182,12 +221,18 @@ public:
     void iterate()
     {
         // forward to get [(x*, u*), ...]
-        forwardPass();
+        while(forwardPass())
+        {
+            alpha *= alphaDecay;
+            setDInit(dArray[N]);
+        }
+        alpha = 1.0;
         setDInit(dArray[N]);
+
         // backward to get [(K, k), ...]
         while (backwardPass())
             increaseMu();
-        // decreaseMu();
+        decreaseMu();
     }
 
 
