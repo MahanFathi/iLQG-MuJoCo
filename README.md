@@ -19,6 +19,7 @@ A few iterations before convergence is shown here. Hopper in particular does som
 ### Dependencies
 - [MuJoCo](MuJoCo.org)
 - [Eigen 3](http://eigen.tuxfamily.org)
+- [OpenMP](https://www.openmp.org/) 
 - OpenGL 
 
 ### Usage 
