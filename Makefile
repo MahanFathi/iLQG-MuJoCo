@@ -7,8 +7,10 @@ SRC_DIR=src
 INC_DIR=inc
 OBJ_DIR=obj
 
-MJKEY=~/.mujoco/mjkey.txt # change if needed
-MUJOCO_PATH=/home/mahan/.mujoco/mujoco200_linux # change if needed
+# change if needed
+MJKEY=~/.mujoco/mjkey.txt
+MUJOCO_PATH=/home/mahan/.mujoco/mujoco200
+
 MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/bin
 
 CC=clang++
