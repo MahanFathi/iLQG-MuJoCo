@@ -11,8 +11,8 @@ main
 # key
 mjkey.txt
 
-# emacs stuff
-.clang_complete
+# emacs stuff (naah actually useful)
+# .clang_complete
 
 # mujoco log
 MUJOCO_LOG.TXT

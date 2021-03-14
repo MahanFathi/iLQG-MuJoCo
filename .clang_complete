@@ -1,0 +1,6 @@
+-std=c++17
+-Wall
+-pthread
+-I.
+-Iinc
+-I/home/mahan/.mujoco/mujoco200/include
