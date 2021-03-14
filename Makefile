@@ -9,7 +9,7 @@ OBJ_DIR=obj
 
 # change if needed
 MJKEY=~/.mujoco/mjkey.txt
-MUJOCO_PATH=/home/mahan/.mujoco/mujoco200
+MUJOCO_PATH=/home/$$USER/.mujoco/mujoco200
 
 MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/bin
 
