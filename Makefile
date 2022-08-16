@@ -8,16 +8,15 @@ INC_DIR=inc
 OBJ_DIR=obj
 
 # change if needed
-MJKEY=~/.mujoco/mjkey.txt
-MUJOCO_PATH=/home/$$USER/.mujoco/mujoco200
+MUJOCO_PATH=/home/$$USER/.mujoco/mujoco
 
-MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/bin
+MJ_FLAGS=-I$(MUJOCO_PATH)/include -L$(MUJOCO_PATH)/lib
 
 CC=clang++
 CFLAGS=-I. -I$(INC_DIR)/ $(MJ_FLAGS) -std=c++17 -O3 -pthread -mavx -Wl,-rpath,'$$ORIGIN'
 
 LIBS=-lpthread -fopenmp
-LIBS_GL=-lmujoco200 -lGLEW -lGLU -lGL -lglfw
+LIBS_GL=-lmujoco -lGLEW -lGLU -lGL -lglfw
 LIBS_NOGL=-lmujoco200nogl
 
 SRCS=$(wildcard $(SRC_DIR)/*.c*) $(wildcard $(SRC_DIR)/*/*.c*)
@@ -44,6 +43,5 @@ clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR) mjkey.txt
 
 prebuild:
-	cp $(MJKEY) .
 	mkdir -p bin
-	cp $(MUJOCO_PATH)/bin/libmujoco* ./bin/
+	cp $(MUJOCO_PATH)/lib/libmujoco* ./bin/

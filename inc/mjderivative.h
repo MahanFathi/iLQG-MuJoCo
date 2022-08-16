@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 typedef mjtNum (*stepCostFn_t)(const mjData*);
 

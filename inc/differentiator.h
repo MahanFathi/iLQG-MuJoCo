@@ -1,7 +1,7 @@
 #pragma once
 
 #include <eigen3/Eigen/Core>
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 #include "mjderivative.h"
 

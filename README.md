@@ -23,7 +23,7 @@ A few iterations before convergence is shown here. Hopper in particular does som
 - OpenGL 
 
 ### Usage 
-Modify the `Makefile` by specifying `MJKEY` and `MUJOCO_PATH`, make the executables with `make`, 
+Modify the `Makefile` by specifying `MUJOCO_PATH`, make the executables with `make`, 
 and run with `./bin/base ./res/inverted_pendulum.xml`.
 
 ### TODOs

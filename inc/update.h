@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 
 void forwardStep(mjModel* model, mjData* data);

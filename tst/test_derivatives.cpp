@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include <eigen3/Eigen/Core>
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 #include "differentiator.h"
 #include "mjderivative.h"

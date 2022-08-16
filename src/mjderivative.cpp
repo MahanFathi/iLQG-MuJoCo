@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 #include "mjderivative.h"
 #include "util.h"

@@ -1,4 +1,4 @@
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 #include <iostream>
 
 

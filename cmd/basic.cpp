@@ -13,7 +13,7 @@
 #include <string.h>
 #include <iostream>
 
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 #include <GLFW/glfw3.h>
 
 #include "mjderivative.h"

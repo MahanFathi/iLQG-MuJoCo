@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "mujoco.h"
+#include "mujoco/mujoco.h"
 
 
 inline mjtNum stepCost(const mjData* d)
